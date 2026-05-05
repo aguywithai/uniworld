@@ -66,6 +66,8 @@ coverage/
 extensions/vscode/out/
 extensions/vscode/node_modules/
 extensions/vscode/*.vsix
+# Local vsce package from repo root (npx vsce package --out ../../...)
+uniworld-vscode-*.vsix
 extensions/powershell/bin/
 extensions/powershell/obj/
 
