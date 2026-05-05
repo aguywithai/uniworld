@@ -5,6 +5,7 @@ edition = "2021"
 description = "Correct Unicode text handling for every script: bidi, line breaking, segmentation, normalization"
 license = "MIT"
 repository = "https://github.com/aguywithai/uniworld"
+homepage = "https://aguywithai.world/opensource/uniworld/"
 readme = "README.md"
 # crates.io rejects uploads larger than 10 MiB (compressed). When `include` is set, only these
 # paths are packaged; everything else (extensions/, docs PDFs, _publishing/, bindings/, etc.)

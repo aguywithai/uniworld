@@ -9,6 +9,7 @@
     "type": "git",
     "url": "https://github.com/aguywithai/uniworld"
   },
+  "homepage": "https://aguywithai.world/opensource/uniworld/",
   "engines": {
     "vscode": "^1.85.0"
   },

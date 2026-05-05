@@ -70,7 +70,7 @@ These map directly onto the C FFI functions in `src/c_bindings.rs`.
 
 ## More information
 
-- **[uniworld.world](https://uniworld.world)** -- Full project documentation and ecosystem
+- **[Project website](https://aguywithai.world/opensource/uniworld/)** -- Full project documentation and ecosystem
 - **[GitHub repository](https://github.com/aguywithai/uniworld)** -- Source code, issues, conformance tests
 - **[Other integration guides](README.md)** -- Python, JavaScript/WASM, C
 - **[VS Code extension](../../extensions/vscode/README.md)** -- UniWorld in your editor

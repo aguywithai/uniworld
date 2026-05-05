@@ -22,7 +22,7 @@ UniWorld also ships as ready-to-use developer tools:
 
 ## More information
 
-- **[uniworld.world](https://uniworld.world)** -- Full documentation, install guides, and the complete UniWorld ecosystem
+- **[Project website](https://aguywithai.world/opensource/uniworld/)** -- Full documentation, install guides, and the complete UniWorld ecosystem
 - **[GitHub repository](https://github.com/aguywithai/uniworld)** -- Source code, issues, and contributions
 - **[Unicode Showcase](../UniWorld_Unicode_Showcase_TEST_OUTPUT.md)** -- Multi-script stress test demonstrating UniWorld across all supported scripts
 - **[A Guy With AI](https://aguywithai.world)** -- Publisher: podcast and open-source development

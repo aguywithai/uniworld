@@ -105,7 +105,7 @@ Refer to the Python module's `help(uniworld)` output for the full list of functi
 
 ## More information
 
-- **[uniworld.world](https://uniworld.world)** -- Full project documentation and ecosystem
+- **[Project website](https://aguywithai.world/opensource/uniworld/)** -- Full project documentation and ecosystem
 - **[UniWorld on PyPI](https://pypi.org/project/uniworld/)** -- Package page
 - **[GitHub repository](https://github.com/aguywithai/uniworld)** -- Source code, issues, conformance tests
 - **[Other integration guides](README.md)** -- JavaScript/WASM, C, Go

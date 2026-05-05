@@ -2,7 +2,7 @@
 
 Correct Unicode text handling in your editor. Grapheme-aware cursor and delete, bidi visualization, display width, line break decorations, normalization, and Unicode inspection -- all powered by a conformance-tested Rust/WASM core.
 
-**UniWorld is more than an extension.** It is a complete Unicode text-handling ecosystem: a [Rust library](https://github.com/aguywithai/uniworld) with bindings for Python, JavaScript/WASM, C, and Go, a [PowerShell module](https://www.powershellgallery.com/packages/UniWorld), and this VS Code extension. Visit **[uniworld.world](https://uniworld.world)** for the full project, documentation, integration guides, and other tools.
+**UniWorld is more than an extension.** It is a complete Unicode text-handling ecosystem: a [Rust library](https://github.com/aguywithai/uniworld) with bindings for Python, JavaScript/WASM, C, and Go, a [PowerShell module](https://www.powershellgallery.com/packages/UniWorld), and this VS Code extension. Visit the **[project website](https://aguywithai.world/opensource/uniworld/)** for the full project, documentation, integration guides, and other tools.
 
 ## The problems this extension solves
 
@@ -101,7 +101,7 @@ Press F5 in VS Code to launch the Extension Development Host for testing.
 
 | Resource | Link |
 |----------|------|
-| **UniWorld website** | [uniworld.world](https://uniworld.world) |
+| **UniWorld website** | [aguywithai.world/opensource/uniworld](https://aguywithai.world/opensource/uniworld/) |
 | **UniWorld library** (Rust core) | [GitHub](https://github.com/aguywithai/uniworld) |
 | **PowerShell module** | [PowerShell Gallery](https://www.powershellgallery.com/packages/UniWorld) / [README](../powershell/README.md) |
 | **Python integration** | [Integration guide](../../docs/integration/python.md) |

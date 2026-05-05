@@ -2,7 +2,7 @@
 
 Correct Unicode text handling in PowerShell. Grapheme boundaries, display width, normalization, bidi analysis, line breaking, and more -- 12 cmdlets backed by a conformance-tested Rust core.
 
-**UniWorld is more than a PowerShell module.** It is a complete Unicode text-handling ecosystem: a [Rust library](https://github.com/aguywithai/uniworld) with bindings for Python, JavaScript/WASM, C, and Go, a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=aguywithai.uniworld), and this module. Visit **[uniworld.world](https://uniworld.world)** for the full project, documentation, integration guides, and other tools.
+**UniWorld is more than a PowerShell module.** It is a complete Unicode text-handling ecosystem: a [Rust library](https://github.com/aguywithai/uniworld) with bindings for Python, JavaScript/WASM, C, and Go, a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=aguywithai.uniworld), and this module. Visit the **[project website](https://aguywithai.world/opensource/uniworld/)** for the full project, documentation, integration guides, and other tools.
 
 ## The problems this module solves
 
@@ -188,7 +188,7 @@ The same Rust code that passes 770,000+ Unicode conformance tests runs beneath t
 
 | Resource | Link |
 |----------|------|
-| **UniWorld website** | [uniworld.world](https://uniworld.world) |
+| **UniWorld website** | [aguywithai.world/opensource/uniworld](https://aguywithai.world/opensource/uniworld/) |
 | **UniWorld library** (Rust core) | [GitHub](https://github.com/aguywithai/uniworld) |
 | **VS Code extension** | [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=aguywithai.uniworld) / [README](../vscode/README.md) |
 | **Python integration** | [Integration guide](../../docs/integration/python.md) |

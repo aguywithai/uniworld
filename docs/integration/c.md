@@ -64,7 +64,7 @@ Link against the built UniWorld library when compiling this program.
 
 ## More information
 
-- **[uniworld.world](https://uniworld.world)** -- Full project documentation and ecosystem
+- **[Project website](https://aguywithai.world/opensource/uniworld/)** -- Full project documentation and ecosystem
 - **[GitHub repository](https://github.com/aguywithai/uniworld)** -- Source code, issues, conformance tests
 - **[Other integration guides](README.md)** -- Python, JavaScript/WASM, Go
 - **[VS Code extension](../../extensions/vscode/README.md)** -- UniWorld in your editor

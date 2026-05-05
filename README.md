@@ -4,7 +4,7 @@
 
 UniWorld is an open-source library, a set of language bindings, and developer tools that implement the Unicode standard's core text algorithms -- all from a single, conformance-tested Rust core. It ships as a library (Rust, Python, JavaScript/WASM, C, Go), a [VS Code extension](extensions/vscode/README.md), and a [PowerShell module](extensions/powershell/README.md).
 
-**[uniworld.world](https://uniworld.world)** -- Full documentation, install guides, and the complete UniWorld ecosystem.
+**[Project website](https://aguywithai.world/opensource/uniworld/)** -- Full documentation, install guides, and the complete UniWorld ecosystem. Short domain [uniworld.world](https://uniworld.world) should redirect to that URL once DNS is configured.
 
 ---
 
@@ -196,7 +196,7 @@ See the [Unicode Showcase](docs/UniWorld_Unicode_Showcase_TEST_OUTPUT.md) for a 
 
 | Document | Description |
 |----------|-------------|
-| [uniworld.world](https://uniworld.world) | Project website with full documentation and install guides |
+| [aguywithai.world/opensource/uniworld](https://aguywithai.world/opensource/uniworld/) | Project website (canonical); [uniworld.world](https://uniworld.world) redirects here when live |
 | [VS Code Extension README](extensions/vscode/README.md) | Features, settings, commands, development |
 | [PowerShell Module README](extensions/powershell/README.md) | Cmdlets, pipeline usage, architecture |
 | [Python integration](docs/integration/python.md) | PyO3 binding setup and API |
@@ -233,4 +233,4 @@ Unicode Character Database data is used under the [Unicode License](https://www.
 
 ---
 
-UniWorld is an [A Guy With AI](https://aguywithai.world) project by Sean MacNutt, developed using [HAIMU](https://haimu.world), the AI development methodology also originated by MacNutt. HAIMU (Human-AI Mutual Understandability) generated the insight that led to UniWorld -- when prompted for the largest-ROI neglected technical benefit projects an AI could conceive of, correct Unicode handling emerged as the clear winner. The library was largely built within 14 hours of project idea generation. "Move fast and fix things." Initial development funded by [Grand Beta](https://grandbeta.world). Visit **[uniworld.world](https://uniworld.world)** for the full ecosystem.
+UniWorld is an [A Guy With AI](https://aguywithai.world) project by Sean MacNutt, developed using [HAIMU](https://haimu.world), the AI development methodology also originated by MacNutt. HAIMU (Human-AI Mutual Understandability) generated the insight that led to UniWorld -- when prompted for the largest-ROI neglected technical benefit projects an AI could conceive of, correct Unicode handling emerged as the clear winner. The library was largely built within 14 hours of project idea generation. "Move fast and fix things." Initial development funded by [Grand Beta](https://grandbeta.world). Visit the **[project website](https://aguywithai.world/opensource/uniworld/)** for the full ecosystem.

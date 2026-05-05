@@ -34,8 +34,8 @@ Tokens must **never** be committed. This repo is set up so you can add them in o
 
 ### Domain and presence (optional but recommended)
 
-- [ ] **Domain**: Acquire **uniworld.world** (or alternate) if you want a canonical landing page. Not required for publishing packages.
-- [ ] **Landing**: Plan where the project "lives" publicly: GitHub README only, or GitHub Pages (see below) / uniworld.world linking to repo, podcast, and registries.
+- [ ] **Domain**: **uniworld.world** optional short domain; 301 to `https://aguywithai.world/opensource/uniworld/` (see `_publishing/site/HOSTING.txt`).
+- [ ] **Landing**: Canonical site path **`/opensource/uniworld/`** on aguywithai.world; static files in `_publishing/site/` (see `HOSTING.txt`).
 
 ### GitHub Pages (if the URL points here)
 
@@ -139,7 +139,7 @@ Human checkpoint: **you** decide when to publish. The bot (or you) can do the re
 
 - [ ] **Registry pages**: Spot-check crates.io, PyPI, npm, VS Code Marketplace, and PowerShell Gallery project pages; fix any description or link if needed.
 - [ ] **README**: Ensure root README is the one you want on crates.io (crates.io shows the repo README by default).
-- [ ] **Landing / website**: Update `_publishing/site/` with links to all registries, the VS Code extension, and the PowerShell module. See `_publishing/site/SITE_CONTENT.md` for the full content plan. Deploy to GitHub Pages or uniworld.world.
+- [ ] **Landing / website**: Deploy `_publishing/site/` to aguywithai.world as `public/opensource/` + root `style.css` per `HOSTING.txt`. Optionally GitHub Pages mirror. Registry links live in `index.html`.
 - [ ] **Announce**: Optional: link from podcast, blog, or business site; keep messaging consistent with "open source, correct Unicode for every script."
 
 ### Extension publishing

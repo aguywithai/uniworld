@@ -59,7 +59,7 @@ Consult the generated TypeScript definitions (if using `wasm-pack build --target
 
 ## More information
 
-- **[uniworld.world](https://uniworld.world)** -- Full project documentation and ecosystem
+- **[Project website](https://aguywithai.world/opensource/uniworld/)** -- Full project documentation and ecosystem
 - **[UniWorld on npm](https://www.npmjs.com/package/uniworld)** -- Package page
 - **[GitHub repository](https://github.com/aguywithai/uniworld)** -- Source code, issues, conformance tests
 - **[Other integration guides](README.md)** -- Python, C, Go

@@ -1,6 +1,6 @@
 # UniWorld website content plan
 
-This document defines what the site (GitHub Pages / uniworld.world) should include. Use it as the brief for building `index.html` and any additional pages. The site is the public face of the project: it should explain what UniWorld is, why it matters, how to get it, and what tools are available.
+This document defines what the public site should include. Canonical deploy path: **https://aguywithai.world/opensource/uniworld/** (short domain uniworld.world may 301 there). Static files live under `_publishing/site/`.
 
 ---
 
@@ -12,10 +12,10 @@ This document defines what the site (GitHub Pages / uniworld.world) should inclu
 
 **Tagline**: Correct Unicode text handling for every script.
 
-**One-paragraph summary**: UniWorld is an open-source library that implements the Unicode standard's text algorithms -- bidirectional layout (UAX #9), line breaking (UAX #14), text segmentation (UAX #29), and normalization (UAX #15) -- in a single, tested Rust core with bindings for Python, JavaScript/WASM, C, and Go. It also ships as a VS Code extension and a PowerShell module. Visit **[uniworld.world](https://uniworld.world)** for the full project.
+**One-paragraph summary**: UniWorld is an open-source library that implements the Unicode standard's text algorithms -- bidirectional layout (UAX #9), line breaking (UAX #14), text segmentation (UAX #29), and normalization (UAX #15) -- in a single, tested Rust core with bindings for Python, JavaScript/WASM, C, and Go. It also ships as a VS Code extension and a PowerShell module. Visit the **[canonical project page](https://aguywithai.world/opensource/uniworld/)** for the full project.
 
 **Primary CTA**: Link to GitHub repo.
-**Secondary CTAs**: VS Code Marketplace | PowerShell Gallery | uniworld.world
+**Secondary CTAs**: VS Code Marketplace | PowerShell Gallery | [Project site](https://aguywithai.world/opensource/uniworld/)
 
 ---
 
