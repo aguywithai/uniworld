@@ -16,7 +16,7 @@ Tokens must **never** be committed. This repo is set up so you can add them in o
 - [ ] **Fill in only the tokens you need**:
   - **crates.io**: Create a token at [crates.io/settings/tokens](https://crates.io/settings/tokens). In `.env` set `CARGO_REGISTRY_TOKEN=<your-token>`. The bot (or you) can run `cargo login --token $CARGO_REGISTRY_TOKEN` before `cargo publish`, or you run `cargo login` once on your machine and cargo will use `~/.cargo/credentials.toml` instead.
   - **PyPI**: Create a project-scoped token at [pypi.org/manage/account/token/](https://pypi.org/manage/account/token/). In `.env` set `PYPI_API_TOKEN=<your-token>`. `maturin publish` and `twine` use this when the env var is set.
-  - **npm**: Create an Automation or Publish token at [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~/tokens). In `.env` set `NPM_TOKEN=<your-token>`. For `npm publish`, you can run `npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN` once in the session, or rely on `npm login` having been done (stores auth in `~/.npmrc`).
+  - **npm**: At [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~/tokens), use a **Granular Access Token** with **Read and Write** on package `uniworld` (or as npm requires for automation). Classic tokens often hit **E403** in CI until 2FA/granular rules are satisfied. In `.env` set `NPM_TOKEN=<your-token>`; duplicate the value in GitHub **NPM_TOKEN**. For local `npm publish`, you can set `//registry.npmjs.org/:_authToken` in `~/.npmrc` for the session.
   - **VS Code Marketplace**: Create a PAT at [dev.azure.com](https://dev.azure.com) (scopes: Marketplace > Manage). In `.env` set `VSCE_PAT=<your-pat>`. `vsce publish` uses this. See the Azure DevOps / Marketplace setup in Stage 1 below.
   - **PowerShell Gallery**: Create an API key at [powershellgallery.com/account/apikeys](https://www.powershellgallery.com/account/apikeys). In `.env` set `PSGALLERY_API_KEY=<your-key>`. `Publish-Module` uses this.
 - [ ] **CI (GitHub Actions)**: Do **not** put tokens in the repo. Add them as **repository secrets**: Settings → Secrets and variables → Actions → New repository secret. Use the same names (`CARGO_REGISTRY_TOKEN`, `PYPI_API_TOKEN`, `NPM_TOKEN`, `VSCE_PAT`, `PSGALLERY_API_KEY`) in the workflow so the same checklist applies.
@@ -70,7 +70,7 @@ Do these once; the bot can use tokens afterward for all publishes.
 
 - [ ] **crates.io**: GitHub linked, API token created; add to **`.env`** (see "Where to add tokens" above) or run `cargo login`.
 - [ ] **PyPI**: Account created, project-scoped API token created; add to **`.env`** as `PYPI_API_TOKEN`.
-- [ ] **npm**: Account created, token created; add to **`.env`** as `NPM_TOKEN` or run `npm login`.
+- [ ] **npm**: Account created; **granular** (or other publish-capable) token created; **`.env`** and GitHub **NPM_TOKEN** updated. If `npm publish` returns **E403**, fix token type and package access on npmjs.com (see `.env.example`).
 
 ### Extension marketplaces
 
@@ -104,7 +104,7 @@ Do these once; the bot can use tokens afterward for all publishes.
 
 Python users need pre-built wheels. You cannot build every platform from one machine.
 
-- [x] **GitHub Actions**: `.github/workflows/release.yml` runs on **release tag** (`v*`) and uses **maturin-action** to publish wheels from **ubuntu-latest, windows-latest, macos-latest** (extend matrix later for Linux aarch64 / Apple Silicon if needed). It downloads UCD test data before `cargo test`, then publishes PyPI, crates.io, and npm (wasm-pack). Manual **workflow_dispatch** runs tests only (no publish).
+- [x] **GitHub Actions**: `.github/workflows/release.yml` runs on **release tag** (`v*`) and uses **maturin-action** to publish wheels from **ubuntu-latest, windows-latest, macos-latest** (extend matrix later for Linux aarch64 / Apple Silicon if needed). It downloads UCD test data before `cargo test`, then publishes PyPI, crates.io, and npm (WASM via **wasm-bindgen-cli**). Manual **workflow_dispatch** runs tests only (no publish).
 - [ ] Confirm secrets in the repo: `PYPI_API_TOKEN`, `CARGO_REGISTRY_TOKEN`, `NPM_TOKEN` (same names as `.env.example`).
 - [ ] **Token storage**: Store PyPI token as a GitHub Actions secret (e.g. `PYPI_API_TOKEN`); same for npm if publishing from CI. crates.io uses `cargo login` token; for CI you typically use `CARGO_REGISTRY_TOKEN` or the crates.io CI token.
 

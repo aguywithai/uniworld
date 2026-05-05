@@ -4,7 +4,7 @@
 # GitHub Actions repository secrets (Settings -> Secrets and variables -> Actions):
 #   PYPI_API_TOKEN       - PyPI API token (project-scoped recommended)
 #   CARGO_REGISTRY_TOKEN - crates.io API token (crates.io profile email must be verified)
-#   NPM_TOKEN            - npm automation/publish token
+#   NPM_TOKEN            - npm token allowed to publish (see .env.example: granular token + CI / 2FA rules)
 # Optional (future jobs): VSCE_PAT, PSGALLERY_API_KEY
 #
 # See _publishing/CHECKLIST.md for local .env names (same as secret names above).
@@ -176,13 +176,18 @@ jobs:
             version,
             description: "Correct Unicode text handling for every script: bidi, line breaking, segmentation, normalization",
             license: "MIT",
-            repository: { type: "git", url: "https://github.com/aguywithai/uniworld" },
+            repository: {
+              type: "git",
+              url: "git+https://github.com/aguywithai/uniworld.git",
+            },
             main: "uniworld.js",
             types: "uniworld.d.ts",
           };
           fs.writeFileSync("pkg/package.json", JSON.stringify(pkg, null, 2) + "\n");
           NODE
 
+      # E403 "Two-factor authentication or granular access token...": fix at npmjs.com (token type +
+      # package access), not in this repo. Secret NPM_TOKEN must be a publish-capable token.
       - name: npm publish
         working-directory: pkg
         run: npm publish --access public
