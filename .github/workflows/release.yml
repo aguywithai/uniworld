@@ -66,13 +66,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # maturin-action does not accept python-version; PyO3 follows PATH. Pin 3.12 so macOS
+      # does not pick CPython 3.14 (PyO3 0.23 supports through 3.13 only).
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Publish wheels (and sdist where applicable)
         uses: PyO3/maturin-action@v1
         with:
           command: publish
           args: --non-interactive --skip-existing
-          # PyO3 0.23 supports CPython through 3.13; macOS runners may default to 3.14.
-          python-version: "3.12"
         env:
           MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
 
@@ -87,9 +91,19 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # Cargo reads CARGO_REGISTRY_TOKEN for crates.io (avoid deprecated --token flag).
+      # Cargo reads CARGO_REGISTRY_TOKEN for crates.io. Retry on transient 503 from crates.io CDN.
       - name: cargo publish
-        run: cargo publish
+        shell: bash
+        run: |
+          set -e
+          for attempt in 1 2 3 4 5; do
+            if cargo publish; then
+              exit 0
+            fi
+            echo "cargo publish failed (attempt ${attempt}), retrying in 45s..."
+            sleep 45
+          done
+          exit 1
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
@@ -115,12 +129,13 @@ jobs:
       - name: Ensure wasm32-unknown-unknown
         run: rustup target add wasm32-unknown-unknown
 
+      # Pin wasm-pack: some releases mistakenly pass wasm-pack's --target (web/bundler) to
+      # rustup as a Rust triple. Omit --target here (default bundler-style output).
       - name: Install wasm-pack
-        run: cargo install wasm-pack --locked
+        run: cargo install wasm-pack --locked --version 0.12.1
 
-      # Use bundler output mode (wasm-pack --target), not rustc triple "web" (see wasm-pack book).
       - name: wasm-pack build
-        run: wasm-pack build --release --features wasm --target bundler --out-dir pkg
+        run: wasm-pack build --release --features wasm --out-dir pkg
 
       - name: npm publish
         working-directory: pkg
