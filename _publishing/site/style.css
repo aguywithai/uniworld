@@ -1,0 +1,75 @@
+/* UniWorld landing page - minimal, clean */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: #1a1a1a;
+  background: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2em;
+}
+
+main {
+  max-width: 600px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3em;
+  font-weight: 700;
+  margin-bottom: 0.2em;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  font-size: 1.3em;
+  color: #555;
+  margin-bottom: 1.5em;
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 1.5em;
+  color: #333;
+}
+
+nav {
+  display: flex;
+  gap: 1.5em;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0.6em 1.4em;
+  border: 2px solid #1a1a1a;
+  border-radius: 6px;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+
+nav a:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+footer {
+  margin-top: 3em;
+  color: #888;
+  font-size: 0.9em;
+}
+
+footer a {
+  color: #555;
+}

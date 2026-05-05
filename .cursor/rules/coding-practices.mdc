@@ -1,0 +1,113 @@
+---
+alwaysApply: true
+---
+
+# UniWorld - Coding Practices and Project Conventions
+
+## Source of Truth
+
+UniWorld project source of truth: `_development/docs/UniWorld_PROJECT.md`. All design, architecture, phases, and algorithm scope are defined there. Refer to it when making structural or scope decisions.
+
+## Development-Only vs Shipped Content
+
+- **`_development/`**: Files useful for development but **not** included in the final published package. Observe `.gitignore` so generated artifacts and local dev content stay out of commits where appropriate; docs and scripts under `_development/` are versioned as project assets.
+- **Dev notes**: Create and keep all dev notes in **`_development/dev_notes/`**. **Required habit**: create or update dev notes **before** starting development work (e.g., session goals, decisions, blockers). The assistant must create or update dev notes at the start of a development session when doing development; this is not optional.
+- **Auxiliary scripts**: Any helper or one-off scripts live in **`_development/scripts/`**. Do not ship these as part of the library.
+- **Tests**: Unit and integration tests live under **`tests/`** at the repository root and **are** included in the repo and in published source.
+- **Documentation for publication**: README, integration guides, contributing guides, and other open-source accompaniment go in **`docs/`** at the repo root or at the root as appropriate (e.g. `README.md` at root). Generate these per the project roadmap; keep working/source docs in `_development/docs/` as needed.
+
+### _development/ Substructure
+
+```
+_development/
+  dev_notes/       # Session notes, decisions, blockers (create before dev)
+  docs/            # Working and source docs (e.g. UniWorld_PROJECT.md)
+  scripts/         # Auxiliary scripts (not shipped)
+```
+
+## Shell Environment (Windows / PowerShell)
+
+Rust and Cargo are installed but **not** on the default system PATH in Cursor's shell. Before running any `cargo`, `rustc`, or Rust toolchain commands, prepend the Rust directories to `$env:Path`:
+
+```powershell
+$env:Path = "C:\Users\seanm\.cargo\bin;C:\Users\seanm\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin;" + $env:Path
+```
+
+This must be run at the start of each new shell session (or each Shell tool invocation if state has been lost). After that, `cargo build`, `cargo test`, `cargo clippy`, `cargo fmt`, `wasm-pack`, and `rustup` will resolve correctly.
+
+**PowerShell syntax note**: Use `;` to separate sequential commands. The `&&` operator is not supported in older PowerShell versions used by Cursor's shell.
+
+### Building WASM bindings (for VS Code extension)
+
+After the PATH is set:
+
+```powershell
+# Build WASM (output goes to pkg/ in repo root)
+wasm-pack build --target nodejs --features wasm --no-default-features
+
+# Copy WASM artifacts to the VS Code extension
+Copy-Item pkg\uniworld.js extensions\vscode\wasm\
+Copy-Item pkg\uniworld.d.ts extensions\vscode\wasm\
+Copy-Item pkg\uniworld_bg.wasm extensions\vscode\wasm\
+Copy-Item pkg\uniworld_bg.wasm.d.ts extensions\vscode\wasm\
+```
+
+### Building the VS Code extension
+
+```powershell
+cd extensions\vscode
+npm install
+npm run compile    # produces out/extension.js
+# F5 in VS Code to launch Extension Development Host for testing
+```
+
+## Code Quality Standards
+
+### Rust (Core Library)
+
+- **rustfmt**: Format all Rust code; enforce via CI where applicable.
+- **Clippy**: Run and fix warnings. No allowed-by-default lints for style or correctness unless explicitly justified.
+- **Naming**: `snake_case` for functions, variables, modules; `PascalCase` for types; `SCREAMING_SNAKE_CASE` for constants.
+- **Doc comments**: All public items (modules, types, functions) must have doc comments. Reference the Unicode standard (e.g. UAX #9, UAX #14, UAX #29, UAX #15) where the code implements a specification.
+- **Tests**: Core algorithms must pass official Unicode conformance tests; add unit tests in `tests/` (root) or under the crate as appropriate.
+
+### Bindings (Python, JS, C, Go)
+
+- Follow the dominant style guide for each language (PEP 8 for Python, etc.).
+- Type hints in Python; JSDoc/TypeScript types for JS where applicable.
+- Document which UniWorld/UAX feature each binding surface exposes.
+
+### General
+
+- **No Unicode in code**: Do not use Unicode characters in source code (identifiers, comments, string literals used for logic) unless under special instruction. ASCII only. This reduces tooling and environment errors.
+- **Line length**: Prefer ~100 characters max where practical; respect language-specific norms (e.g. Rust default 100).
+
+## Documentation Requirements
+
+- **Module/crate level**: Brief description of the module and which UAX or algorithm it implements.
+- **Public API**: Every public function/type must have a docstring or doc comment describing purpose, args, return value, and any UAX/spec reference.
+- **README and docs**: Generated or maintained per PROJECT_ROADMAP; live in `docs/` or repo root as specified in the roadmap.
+
+## Error Handling
+
+- Use typed errors in Rust (`Result<T, E>`); avoid panics in library code except for contract violations (e.g. assertion).
+- In bindings, map Rust errors to idiomatic errors in the target language.
+
+## Version Control
+
+- **Commit messages**: Clear and descriptive. Optionally prefix with component, e.g. `[bidi] Implement bracket pair resolution (UAX #9)`.
+- Do not commit build artifacts, virtualenv, or IDE-specific files that are listed in `.gitignore`.
+
+## .gitignore
+
+- Respect the project `.gitignore` when creating or moving files. Do not add development-only outputs or secrets under versioned paths; keep generated docs and scripts in the locations specified above so that `.gitignore` rules remain consistent.
+
+## Code Review Checklist
+
+Before submitting or merging:
+
+- [ ] Rust: `cargo fmt`, `cargo clippy` clean
+- [ ] Tests in `tests/` (or crate tests) pass
+- [ ] Public API documented with UAX/spec references where relevant
+- [ ] No Unicode in code (ASCII only unless specially instructed)
+- [ ] New scripts in `_development/scripts/`; dev notes in `_development/dev_notes/` when applicable

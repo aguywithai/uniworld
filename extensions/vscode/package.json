@@ -1,0 +1,187 @@
+{
+  "name": "uniworld",
+  "displayName": "UniWorld - Unicode Text Tools",
+  "description": "Correct Unicode text handling in VS Code: grapheme-aware cursor, display width, bidi visualization, normalization, and more. Powered by UniWorld (Rust/WASM).",
+  "version": "0.2.0",
+  "publisher": "aguywithai",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aguywithai/uniworld"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "unicode",
+    "grapheme",
+    "emoji",
+    "bidi",
+    "rtl",
+    "normalization",
+    "text"
+  ],
+  "galleryBanner": {
+    "color": "#1a1a2e",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "icon": "icon.png",
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "uniworld.inspectSelection",
+        "title": "UniWorld: Inspect Selection"
+      },
+      {
+        "command": "uniworld.truncateToDisplayWidth",
+        "title": "UniWorld: Truncate to Display Width"
+      },
+      {
+        "command": "uniworld.normalizeNFC",
+        "title": "UniWorld: Normalize NFC"
+      },
+      {
+        "command": "uniworld.normalizeNFD",
+        "title": "UniWorld: Normalize NFD"
+      },
+      {
+        "command": "uniworld.normalizeNFKC",
+        "title": "UniWorld: Normalize NFKC"
+      },
+      {
+        "command": "uniworld.normalizeNFKD",
+        "title": "UniWorld: Normalize NFKD"
+      },
+      {
+        "command": "uniworld.cursorLeftGrapheme",
+        "title": "UniWorld: Move Cursor Left by Grapheme"
+      },
+      {
+        "command": "uniworld.cursorRightGrapheme",
+        "title": "UniWorld: Move Cursor Right by Grapheme"
+      },
+      {
+        "command": "uniworld.deleteLeftGrapheme",
+        "title": "UniWorld: Delete Left by Grapheme (Backspace)"
+      },
+      {
+        "command": "uniworld.deleteRightGrapheme",
+        "title": "UniWorld: Delete Right by Grapheme (Delete)"
+      },
+      {
+        "command": "uniworld.cursorLeftVisual",
+        "title": "UniWorld: Move Cursor Visually Left (Bidi-aware)"
+      },
+      {
+        "command": "uniworld.cursorRightVisual",
+        "title": "UniWorld: Move Cursor Visually Right (Bidi-aware)"
+      },
+      {
+        "command": "uniworld.selectWord",
+        "title": "UniWorld: Select Word at Cursor (Script-aware)"
+      },
+      {
+        "command": "uniworld.toggleLineBreakDecorations",
+        "title": "UniWorld: Toggle Line Break Opportunity Decorations"
+      }
+    ],
+    "configuration": {
+      "title": "UniWorld",
+      "properties": {
+        "uniworld.enableGraphemeCursor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Replace Left/Right arrow keys with UniWorld grapheme-aware cursor movement. Prevents cursor from landing inside emoji ZWJ sequences, Indic conjuncts, and combining mark sequences."
+        },
+        "uniworld.enableGraphemeDelete": {
+          "type": "boolean",
+          "default": true,
+          "description": "Replace Backspace/Delete with UniWorld grapheme-aware deletion. Deletes entire grapheme clusters (e.g. full emoji, base+combining marks) in one keypress."
+        },
+        "uniworld.enableBidiVisualCursor": {
+          "type": "boolean",
+          "default": false,
+          "description": "Left/Right arrow keys follow visual direction in RTL text (Arabic, Hebrew). Left always moves visually left, Right always moves visually right, regardless of paragraph base direction. Uses UniWorld bidi analysis."
+        },
+        "uniworld.enableGraphemeWordSelect": {
+          "type": "boolean",
+          "default": false,
+          "description": "Double-click and Ctrl+D use UniWorld word boundaries for selection. Respects script-specific word boundaries (Thai, Lao, Khmer, Myanmar, CJK)."
+        },
+        "uniworld.showLineBreakOpportunities": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show line-break opportunities as subtle decorations in the editor. Includes dictionary-based breaks for Thai/Lao/Khmer/Myanmar."
+        },
+        "uniworld.enableHoverInspector": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Unicode inspector (codepoints, display width) when hovering over text. Set to false to disable hover tooltips."
+        },
+        "uniworld.showBidiVisualization": {
+          "type": "boolean",
+          "default": false,
+          "description": "Highlight bidi (bidirectional) runs in the editor: LTR runs in one colour, RTL runs in another, so you can see logical vs visual order at a glance. Uses UniWorld bidi analysis. Toggle off to disable."
+        },
+        "uniworld.bidiHighlightOpacity": {
+          "type": "number",
+          "default": 15,
+          "minimum": 5,
+          "maximum": 80,
+          "description": "Opacity (%) for bidi run highlighting background. Lower = subtler, higher = stronger. Default 15. Border is automatically slightly stronger. Requires toggling bidi visualization off/on to take effect."
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "uniworld.cursorLeftGrapheme",
+        "key": "left",
+        "when": "editorTextFocus && config.uniworld.enableGraphemeCursor && !config.uniworld.enableBidiVisualCursor"
+      },
+      {
+        "command": "uniworld.cursorRightGrapheme",
+        "key": "right",
+        "when": "editorTextFocus && config.uniworld.enableGraphemeCursor && !config.uniworld.enableBidiVisualCursor"
+      },
+      {
+        "command": "uniworld.cursorLeftVisual",
+        "key": "left",
+        "when": "editorTextFocus && config.uniworld.enableBidiVisualCursor"
+      },
+      {
+        "command": "uniworld.cursorRightVisual",
+        "key": "right",
+        "when": "editorTextFocus && config.uniworld.enableBidiVisualCursor"
+      },
+      {
+        "command": "uniworld.deleteLeftGrapheme",
+        "key": "backspace",
+        "when": "editorTextFocus && config.uniworld.enableGraphemeDelete && !editorReadonly"
+      },
+      {
+        "command": "uniworld.deleteRightGrapheme",
+        "key": "delete",
+        "when": "editorTextFocus && config.uniworld.enableGraphemeDelete && !editorReadonly"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.3.0"
+  }
+}

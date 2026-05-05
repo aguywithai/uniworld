@@ -1,0 +1,101 @@
+---
+alwaysApply: true
+---
+
+# UniWorld - Project Roadmap
+
+Source of truth for scope and phases: `_development/docs/UniWorld_PROJECT.md`. This roadmap is a checklisted guide for iterative development. Tick items as they are completed.
+
+## Repo and Development Layout
+
+- **`_development/`**: Development-only content; not included in the final published package.
+  - **`_development/dev_notes/`**: Create and keep all dev notes here. Create or update dev notes **before** starting development work each session.
+  - **`_development/docs/`**: Working and source docs (e.g. UniWorld_PROJECT.md).
+  - **`_development/scripts/`**: Auxiliary scripts; not shipped.
+- **`tests/`** (at repo root): Tests are part of the repo and published source.
+- **`docs/`** (at repo root): Published documentation (README, integration guides, contributing). Generate per steps below.
+- **`.gitignore`**: Observe when adding or generating files; keep dev artifacts and generated content in the correct places so ignore rules stay consistent.
+
+## Phase 0: Repo and Docs Foundation
+
+- [x] `.gitignore` in place and observed (venv, build artifacts, IDE, OS cruft; dev/docs locations respected).
+- [x] `README.md` at repo root (project overview, problem statement, what UniWorld provides, build/run, link to full doc).
+- [x] `docs/` created; structure for integration guides, contributing, and script-specific docs as needed.
+- [x] Licensing files at root (LICENSE; note Unicode License / ICU License for data where used).
+- [x] Dev notes habit: first dev note created in `_development/dev_notes/`; rules require dev notes before development.
+
+## Phase 1: Core Algorithms in Rust (see UniWorld_PROJECT.md, ~4-6 weeks)
+
+- [x] **Week 1-2 — Text Segmentation (UAX #29)**  
+  Grapheme cluster, word, sentence boundaries; pass official conformance tests.  
+  - [x] **Grapheme: done.** 766/766 GraphemeBreakTest cases pass. GCB + GB3-GB9a, GB8, GB9b, GB11, ConjunctLinker/IndicLetter, Prepend, Extend, SpacingMark.  
+  - [x] **Word: done.** 1944/1944 WordBreakTest.txt (Unicode 17.0) cases pass. Full WB rule set (WB3-WB999) with proper WB4 transparency, WB3c (ZWJ x ExtPict), WB15/16 RI pairing, WB7a-7c Hebrew quote rules. Correct MidLetter/MidNumLet/MidNum classifications. `is_extended_pictographic()` added.  
+  - [x] **Sentence: done.** 512/512 SentenceBreakTest.txt (Unicode 17.0) cases pass. Full SB rule set (SB3-SB998). Sentence_Break property (Sb enum) with CR/LF/Sep, Extend/Format transparency (SB5), ATerm/STerm context tracking with Close*/Sp* phases, SB6 (decimal point), SB7 (abbreviation), SB8 (lowercase lookahead), SB8a (continuation), SB9-SB11 (sentence end sequence). `after_close` flag for correct SB6/SB7 scope.
+- [x] **Week 2-3 — Normalization (UAX #15)**  
+  NFC, NFD, NFKC, NFKD; pass conformance tests.  
+  - [x] **Data tables: done.** Python script generates CCC (968 entries), canonical decomposition (2081), compatibility decomposition (5914), composition table (961 pairs) from UnicodeData.txt + CompositionExclusions.txt.  
+  - [x] **All four forms: done.** NormalizationTest.txt (Unicode 17.0) conformance passes. Recursive decomposition, CCC canonical ordering, canonical composition with blocked-pair detection. Hangul algorithmic composition/decomposition (L+V, LV+T, LVT).  
+  - [ ] **Stream-safe and quick check**: deferred to Phase 3 optimization; not required for core correctness.
+- [x] **Week 3-5 — Bidirectional Algorithm (UAX #9)**  
+  Full bidi resolution, bracket pairing, logical/visual mapping; pass conformance tests.  
+  - [x] **Bidi_Class data: done.** Python script generates range table (810 entries) from UnicodeData.txt + bracket pair tables (64 open, 64 close) from BidiBrackets.txt.  
+  - [x] **Full algorithm: done.** P1-P3 (paragraph level detection), X1-X10 (explicit embeddings/overrides/isolates with stack), W1-W7 (weak type resolution), N0 (bracket pair resolution with BD16 stack limit, canonical equivalents, pre-W NSM tracking), N1-N2 (neutral type resolution), I1-I2 (implicit levels), L1-L4 (reorder).  
+  - [x] **Conformance: done.** BidiTest.txt 770,241/770,241 passed (class-level). BidiCharacterTest.txt 91,707/91,707 passed (character-level, bracket pairing, overrides, isolates).
+- [x] **Week 5-6 — Line Breaking (UAX #14)**  
+  Rule-based breaking; pass conformance tests. Dictionary integration (Thai, Lao, Khmer, Myanmar) deferred to Phase 2.  
+  - [x] **Data tables: done.** Python script generates Line_Break enum (43 classes), range-based lookup (4200+ ranges), East_Asian_Width lookup, QU_Pi/QU_Pf classification from LineBreak.txt + EastAsianWidth.txt.  
+  - [x] **Full algorithm: done.** LB1-LB31: mandatory breaks (BK/CR/LF/NL), combining marks/ZWJ absorption (LB9/LB10), word joiner/ZWSP (LB11-LB12), context-sensitive closing punctuation (LB13, LB15.3/15.4, LB15a/LB15b), spaces (LB18), QU_Pi/QU_Pf with East Asian awareness (LB19), word-initial hyphens (LB20a), Hebrew/hyphen/BA (LB21/LB21a/LB21b), numeric context (LB25), Korean Jamo/Hangul (LB26-LB27), aksara/Brahmic scripts with virama lookahead (LB28a: rules 28.11-28.14), regional indicator pairing (LB30a), emoji base-modifier (LB30b).  
+  - [x] **Conformance: done.** LineBreakTest.txt 19,338/19,338 passed (Unicode 17.0, UAX #14 revision 55).  
+  - [x] **Dictionary segmentation** (Thai, Lao, Khmer, Myanmar): implemented with ICU-sourced dictionaries.  
+    - [x] Downloaded and cleaned ICU break iterator dictionaries: Thai (26,383 words), Lao (30,550), Khmer (81,028), Myanmar (41,120). Total: 179,081 words.  
+    - [x] `src/linebreak/dictionary.rs`: HashSet-based dictionary with OnceLock lazy init, longest-match segmentation algorithm, script detection by codepoint range.  
+    - [x] `line_break_opportunities_with_dictionary()` public API: post-processes SA-class runs using dictionary word boundaries.  
+    - [x] 15 integration tests passing (Thai multi-word, single-word, mixed script, Lao/Khmer/Myanmar basics, edge cases).
+
+## Phase 2: Composite Operations and Bindings (~3-4 weeks)
+
+- [x] **Composite operations (Rust core)**  
+  - [x] `cursor` module: logical cursor movement (move_right/left, delete_backward/forward, select_word via grapheme/word boundaries). Visual-order cursor movement (move_right_visual/left_visual) using UAX #9 bidi resolution + grapheme clusters.  
+  - [x] `width` module: display_width and char_width for terminal/fixed-width fonts (East Asian Width, combining marks, ZWJ, SpacingMark).  
+  - [x] `truncate` module: truncate_graphemes (by cluster count) and truncate_display_width (by column width); never breaks clusters or produces ill-formed sequences.  
+  - [x] `casemap` module: full Unicode case mapping (to_lowercase, to_uppercase, to_titlecase) with multi-char expansions from SpecialCasing.txt (sharp s -> SS, ligatures); Greek final sigma rule; case_fold/case_fold_simple for case-insensitive matching; locale-aware variants (Turkish/Azerbaijani I/i, Lithuanian). Data generated from UnicodeData.txt + SpecialCasing.txt + CaseFolding.txt (Unicode 17.0).  
+  - [x] **GCB data quality upgrade**: Replaced hand-crafted grapheme_break.rs (5 SpacingMark entries) with auto-generated tables from GraphemeBreakProperty.txt (381 SpacingMark code points), DerivedCoreProperties.txt (InCB Consonant/Linker), and emoji-data.txt (2,848 Extended_Pictographic code points). All 766/766 conformance tests pass.  
+
+- [x] **Bindings**  
+  - [x] Python (PyO3): full API surface (24 functions: segmentation, normalization, bidi, linebreak, casemap, width, truncation, cursor). Feature-gated (`--features python`), maturin-ready (`pyproject.toml`).  
+  - [x] JavaScript/WASM: wasm-bindgen bindings for all core operations (segmentation, normalization, casemap, width, truncation, cursor). Feature-gated (`--features wasm`), wasm-pack ready.  
+  - [x] C FFI: `#[no_mangle] extern "C"` functions for normalization, casemap, width, cursor. String ownership protocol with `uniworld_free_string`. Feature-gated (`--features cffi`), cbindgen-ready.  
+  - [x] Go: CGo wrapper package (`bindings/go/uniworld.go`) calling C FFI. Covers normalization, casemap, width, cursor.
+
+## Phase 3: Testing and Documentation (~2-3 weeks)
+
+- [x] **Script-specific tests**: Created rich multi-script showcase document `docs/UniWorld_Unicode_Showcase_TEST_OUTPUT.md` (and PDF via `render_unicode_showcase.ps1`) covering Tier 1 scripts, mixed-script paragraphs, emoji ZWJ sequences, and width-sensitive layouts. Used as both stress-test and presentation asset.
+- [x] **Documentation**: Integration guides for Python, JavaScript/WASM, C, Go under `docs/integration/`; script-focused testing notes under `docs/scripts/README.md`; API reference plan under `docs/api/README.md`.
+- [x] **Docs for repo**: Updated root `README.md` to reflect completed bindings; refreshed `docs/README.md` as docs index; ensured structure for integration docs, script docs, and contributing docs is in place.
+
+## Phase 4: Community and Ecosystem (Ongoing)
+
+- [ ] Package publication: crates.io, PyPI, npm as applicable. See `_publishing/CHECKLIST.md`.
+- [x] VS Code extension: feature-complete (Phases 1-3 done), 0.1.0 packaged. See `.cursor/rules/VSCODE_EXTENSION_ROADMAP.mdc` and `extensions/vscode/`.
+- [ ] PowerShell module: see `.cursor/rules/POWERSHELL_MODULE_ROADMAP.mdc` and `extensions/powershell/`.
+- [ ] Static site for GitHub Pages: `_publishing/site/`.
+- [ ] Community test-case and dictionary contribution process.
+- [ ] Outreach and visibility per UniWorld_PROJECT.md.
+
+## Document Generation (Iterative)
+
+- [x] **README.md** (root): Overview, problem, features, quick start, links to `_development/docs/UniWorld_PROJECT.md` and `docs/`.
+- [x] **docs/** structure: e.g. `docs/integration/`, `docs/scripts/`, `docs/contributing/` as needed.
+- [x] **CONTRIBUTING** (root or `docs/contributing/`): How to build, test, submit test cases, add dictionary entries.
+- [ ] **API reference**: Auto-generated from Rust (and binding) doc comments when tooling is in place.
+- When adding or generating new docs, place them in `docs/` or root as appropriate; do not put published user-facing docs under `_development/`. Respect `.gitignore` for any generated artifacts.
+
+## Conventions Reminder
+
+- Dev notes: **`_development/dev_notes/`** — create before dev.
+- Scripts: **`_development/scripts/`**.
+- Tests: **`tests/`** (root).
+- Published docs: **`docs/`** or root. Observe `.gitignore` for all generated and dev-only paths.
+- Publishing and site: **`_publishing/`** (checklist, site source, communications).
+- Extensions: **`extensions/vscode/`**, **`extensions/powershell/`**.
+- Extension roadmaps: **`.cursor/rules/VSCODE_EXTENSION_ROADMAP.mdc`**, **`.cursor/rules/POWERSHELL_MODULE_ROADMAP.mdc`** (manual activation).

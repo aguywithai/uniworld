@@ -1,0 +1,57 @@
+---
+description: Roadmap for the UniWorld PowerShell Module
+globs: extensions/powershell/**
+alwaysApply: true
+---
+
+# UniWorld PowerShell Module Roadmap
+
+Module location: `extensions/powershell/`
+
+## Overview
+
+A PowerShell module (`UniWorld`) that exposes UniWorld functions as cmdlets.
+Uses the **C FFI bindings** (`c_bindings.rs` / cbindgen) compiled to a shared
+library (`.dll` / `.so` / `.dylib`), with a C# P/Invoke interop layer and
+PowerShell cmdlet wrappers. Published to PowerShell Gallery.
+
+## Phase 1: Foundation and FFI
+
+- [x] **Build shared library**: Compiled UniWorld as `cdylib` (`uniworld.dll`) with `cargo build --release --features cffi`; all FFI exports verified
+- [x] **C# interop class**: Inline P/Invoke via `Add-Type` in the .psm1; UTF-8 string marshalling, array marshalling, memory management all handled
+- [x] **Module manifest**: `UniWorld.psd1` (module name, version, description, exported functions, PS Gallery tags)
+- [x] **Smoke test**: Module loads in PowerShell 5.1+; `Get-DisplayWidth "Hello"` returns 5 from Rust FFI
+
+## Phase 2: Core Cmdlets
+
+- [x] **Get-GraphemeBoundaries**: Input string, output array of grapheme cluster strings (via Rust FFI)
+- [x] **Get-WordBoundaries**: Input string, output word segment strings (via Rust FFI)
+- [x] **Get-SentenceBoundaries**: Input string, output sentence segment strings (via Rust FFI)
+- [x] **Get-DisplayWidth**: Input string, output integer display width (CJK=2, emoji=2, via Rust FFI)
+- [x] **Limit-DisplayWidth**: Input string + max columns, output truncated string (via Rust FFI)
+- [x] **ConvertTo-NFC / ConvertTo-NFD / ConvertTo-NFKC / ConvertTo-NFKD**: Normalization cmdlets (via Rust FFI, with .NET fallback if native library not found)
+
+## Phase 3: Advanced Cmdlets
+
+- [x] **Get-BidiClasses**: Input string, output per-character bidi level and direction (LTR/RTL) via Rust FFI
+- [x] **Get-LineBreakOpportunities**: Input string, output break positions with action (Mandatory/Allowed); includes dictionary-based Thai/Lao/Khmer/Myanmar
+- [x] **Get-UnicodeInfo**: Inspector-style cmdlet; codepoint, category, display width per text element
+- [x] **Pipeline support**: All cmdlets accept pipeline input (`"text" | Get-DisplayWidth`); `-InputObject` parameter
+
+## Phase 4: Polish and Publish
+
+- [x] **Pester tests**: Comprehensive tests for all 12 cmdlets with Unicode samples (grapheme clusters, emoji ZWJ, CJK width, normalization, bidi, line breaks, pipeline integration)
+- [ ] **Platform DLLs**: Build and bundle `.dll` (Windows), `.so` (Linux), `.dylib` (macOS) via CI (workflow exists: `.github/workflows/build-native.yml`); needs GitHub push to run
+- [x] **Help**: Comment-based help for all cmdlets with SYNOPSIS, DESCRIPTION, PARAMETER, OUTPUTS, EXAMPLE (`Get-Help <Cmdlet> -Full`)
+- [x] **README**: Updated with full cmdlet documentation, installation, architecture, compatibility
+- [ ] **Publish**: `Publish-Module` to PowerShell Gallery (after CI validation and cross-platform testing)
+
+## Technical notes
+
+- C FFI bindings in `src/c_bindings.rs` (expanded to cover all segmentation, normalization, bidi, line break, truncation, case mapping, display width functions)
+- Build: `cargo build --release --features cffi` produces `target/release/uniworld.dll` (Windows)
+- P/Invoke interop is inline C# via `Add-Type` in the `.psm1`; the DLL path is resolved at load time
+- UTF-8 marshalling: .NET strings encoded to UTF-8 IntPtr on the way in, decoded from Rust-returned IntPtr on the way out, with proper memory freeing via `uniworld_free_string` / `uniworld_free_array`
+- Compatible with PowerShell 5.1+ (Windows PowerShell) and PowerShell 7+ (cross-platform)
+- Cross-platform: ship platform-specific DLLs in subdirectories (`native/win-x64/`, etc.) or build via CI; see `_development/dev_notes/2026-02-10-cross-platform-native-library-plan.md`
+- PowerShell Gallery: requires `.psd1` manifest, `.psm1`, native `.dll`, and `Publish-Module -NuGetApiKey`

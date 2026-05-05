@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniWorld Unicode Showcase (TEST OUTPUT)</title>
+  <style>
+    body {
+      font-family: "Segoe UI", "Noto Sans", "Noto Sans CJK SC",
+                   "Noto Sans Arabic", "Noto Sans Hebrew", system-ui, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 2em auto;
+      padding: 0 1em;
+      color: #1a1a1a;
+    }
+    h1, h2, h3 { margin-top: 1.5em; }
+    pre, code { font-family: Consolas, "Liberation Mono", monospace; }
+    pre { white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
+    blockquote {
+      border-left: 4px solid #ccc;
+      margin-left: 0;
+      padding-left: 1em;
+      color: #444;
+    }
+    blockquote code {
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+<h2>UniWorld – Global Unicode Showcase (TEST OUTPUT)</h2>
+<blockquote>
+<p>This document is a <strong>Unicode stress-test and demo</strong> for UniWorld.<br />
+It is intentionally long and visually dense. Treat it as both:
+- A <strong>presentation</strong> of what UniWorld enables.
+- A <strong>test fixture</strong> for rendering, fonts, and text handling across scripts.</p>
+</blockquote>
+<hr />
+<h3>1. What UniWorld Enables</h3>
+<ul>
+<li><strong>Correct text behavior for every script</strong>:</li>
+<li>Bidirectional layout for <strong>Arabic, Hebrew, mixed RTL/LTR</strong>.</li>
+<li>Reliable grapheme clusters for <strong>emoji, Indic conjuncts, and combining marks</strong>.</li>
+<li>Dictionary-based line breaking for <strong>Thai, Lao, Khmer, Myanmar</strong> (no-space scripts).</li>
+<li>Accurate display width for <strong>CJK full-width</strong> text and terminals.</li>
+<li><strong>Single, testable core</strong>:</li>
+<li>Implemented in Rust with full conformance to:<ul>
+<li><strong>UAX #9</strong> – Bidirectional Algorithm.</li>
+<li><strong>UAX #14</strong> – Line Breaking.</li>
+<li><strong>UAX #29</strong> – Text Segmentation (grapheme, word, sentence).</li>
+<li><strong>UAX #15</strong> – Normalization.</li>
+</ul>
+</li>
+<li><strong>Bindings</strong>:</li>
+<li>Python (<code>uniworld</code>), JavaScript/WASM, C, Go – same behavior, same tests.</li>
+</ul>
+<p>Use this file to:
+- Inspect how your editor, renderer, or terminal handles complex Unicode.
+- Verify that UniWorld-based tools respect grapheme clusters, widths, and breaks.
+- Copy-paste samples into your own test harnesses.</p>
+<hr />
+<h3>2. Latin Scripts and Accents</h3>
+<p>Regular ASCII Latin:</p>
+<ul>
+<li><code>The quick brown fox jumps over the lazy dog.</code></li>
+</ul>
+<p>Latin with diacritics and composed vs decomposed forms:</p>
+<ul>
+<li>Composed: <code>é, ö, ñ, å, ç, ů, ẞ, Ǘ</code></li>
+<li>Decomposed (base + combining marks):  </li>
+<li><code>e</code> + COMBINING ACUTE: <code>é</code>  </li>
+<li><code>o</code> + COMBINING DIAERESIS: <code>ö</code>  </li>
+<li><code>n</code> + COMBINING TILDE: <code>ñ</code></li>
+</ul>
+<p>NFKC/NFKD-sensitive examples (ligatures, compatibility forms):</p>
+<ul>
+<li>Ligatures: <code>ﬀ</code>, <code>ﬁ</code>, <code>ﬂ</code>, <code>ﬃ</code>, <code>ﬄ</code> (should normalize to <code>ff</code>, <code>fi</code>, <code>fl</code>, <code>ffi</code>, <code>ffl</code>).</li>
+<li>Fractions: <code>½</code> vs <code>1/2</code>, <code>⅓</code> vs <code>1/3</code>.</li>
+</ul>
+<p>These samples exercise:
+- <strong>Normalization</strong> (NFC/NFD/NFKC/NFKD).
+- <strong>Grapheme clustering</strong> for combining marks.</p>
+<hr />
+<h3>3. Greek, Cyrillic, and Case Mapping</h3>
+<p>Greek:</p>
+<ul>
+<li>Lowercase: <code>α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω</code></li>
+<li>Uppercase: <code>Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω</code></li>
+<li>Final sigma test word: <code>ΟΔΥΣΣΕΥΣ</code> → lowercase should end with final sigma.</li>
+</ul>
+<p>Cyrillic (Russian phrase):</p>
+<ul>
+<li><code>Привет, мир! Это тест Юникода.</code><br />
+  (Hello, world! This is a Unicode test.)</li>
+</ul>
+<p>These samples exercise:
+- <strong>Case mapping</strong> (upper/lower/title).
+- <strong>Locale-neutral casing</strong> and <strong>Greek final sigma</strong>.</p>
+<hr />
+<h3>4. Hebrew and Arabic – Bidirectional Text</h3>
+<p>Hebrew:</p>
+<ul>
+<li>Plain: <code>שלום עולם</code> (shalom olam – “peace, world / hello, world”)</li>
+<li>With punctuation and numbers: <code>שלום (שלום), 123, סוף.</code>  </li>
+</ul>
+<p>Arabic:</p>
+<ul>
+<li>Plain: <code>مرحبا بالعالم</code> (marḥaban bil-ʿālam – “hello, world”)</li>
+<li>With Latin and digits:</li>
+<li><code>النسخة 2.0 من UniWorld</code></li>
+<li><code>تجربة UniWorld مع النص المختلط: English + العربية + 1234</code></li>
+</ul>
+<p>Mixed BiDi paragraph:</p>
+<ul>
+<li><code>RTL: مرحبا بالعالم, then LTR: Hello, and back to RTL: שלום.</code>  </li>
+</ul>
+<p>These lines should be rendered in <strong>correct visual order</strong> under UAX #9, with appropriate cursor mapping if UniWorld’s bidi and cursor logic is used.</p>
+<hr />
+<h3>5. South Asian Scripts – Indic and Beyond</h3>
+<h4>5.1 Devanagari (Hindi)</h4>
+<ul>
+<li><code>नमस्ते दुनिया</code> (namaste duniya – “hello, world”)  </li>
+<li>Conjuncts and matras: <code>क् + ष → क्ष</code>, <code>श् + र → श्र</code></li>
+<li>Mixed word: <code>प्रोग्रामिंग</code> (programming)</li>
+</ul>
+<h4>5.2 Bengali</h4>
+<ul>
+<li><code>হ্যালো বিশ্ব</code> (hyalo biśśo – “hello, world”)</li>
+<li>Combined consonant clusters: <code>ক্ষ</code>, <code>জ্ঞ</code>, <code>ম্প্র</code></li>
+</ul>
+<h4>5.3 Gurmukhi (Punjabi)</h4>
+<ul>
+<li><code>ਸਤ ਸ੍ਰੀ ਅਕਾਲ</code> (sat sri akal – traditional greeting)</li>
+</ul>
+<h4>5.4 Tamil</h4>
+<ul>
+<li><code>வணக்கம் உலகம்</code> (vaṇakkam ulagam – “hello, world”)</li>
+</ul>
+<h4>5.5 Sinhala</h4>
+<ul>
+<li><code>හෙලෝ වර්ල්ඩ්</code> (hello world, approximated)</li>
+</ul>
+<p>These samples exercise:
+- <strong>Grapheme cluster boundaries</strong> for Indic consonant + virama + consonant sequences.
+- <strong>Line breaking</strong> around scripts with complex clusters.</p>
+<hr />
+<h3>6. Southeast Asian Scripts – Dictionary-based Line Breaking</h3>
+<p>These scripts traditionally <strong>do not use spaces between words</strong>, so line breaking depends on dictionary-based segmentation.</p>
+<h4>6.1 Thai</h4>
+<ul>
+<li>Sentence (no spaces between words):<br />
+<code>สวัสดีชาวโลกนี่คือการทดสอบการตัดคำด้วย UniWorld</code></li>
+</ul>
+<h4>6.2 Lao</h4>
+<ul>
+<li><code>ສະບາຍດີໂລກນີ້ແມ່ນການທົດສອບການຕັດຄໍາ</code></li>
+</ul>
+<h4>6.3 Khmer</h4>
+<ul>
+<li><code>សួស្តីពិភពលោកនេះគឺជាការធ្វើតេស្តការកាត់ពាក្យ</code></li>
+</ul>
+<h4>6.4 Myanmar</h4>
+<ul>
+<li><code>မင်္ဂလာပါကမ္ဘာလောကဤသည်မှာUniWorld၏စမ်းသပ်ခြင်းဖြစ်သည်</code></li>
+</ul>
+<p>When viewed in a UniWorld-aware editor or test harness:</p>
+<ul>
+<li>Line breaks should respect <strong>dictionary segmentation</strong> (Thai/Lao/Khmer/Myanmar).</li>
+<li>Grapheme boundaries should never split inside stacked consonants or complex clusters.</li>
+</ul>
+<hr />
+<h3>7. CJK – Chinese, Japanese, Korean</h3>
+<h4>7.1 Chinese</h4>
+<ul>
+<li>Simplified: <code>你好，世界</code>  </li>
+<li>Traditional: <code>你好，世界</code> (same orthography here, different fonts/locale may differ)</li>
+</ul>
+<h4>7.2 Japanese</h4>
+<ul>
+<li>Kanji + Hiragana + Katakana + Latin:<br />
+<code>こんにちは、UniWorld ライブラリへようこそ – Unicode テキスト処理のテストです。</code></li>
+</ul>
+<h4>7.3 Korean</h4>
+<ul>
+<li>Hangul: <code>안녕하세요, 유니월드 라이브러리입니다.</code></li>
+</ul>
+<p>Display width checks (should be full-width = 2 columns per CJK ideograph/Hangul syllable):</p>
+<ul>
+<li>Monospace grid (conceptual):</li>
+</ul>
+<p><code>text
+  ASCII:   [H][e][l][l][o]      -&gt; width 5
+  CJK:     [你][好][世][界]      -&gt; width 8 (4 × 2)
+  Mixed:   [H][i][!][你][好]    -&gt; width 2 + 1 + 4 = 7</code></p>
+<p>These samples exercise:
+- <strong>East Asian Width</strong> handling in <code>display_width</code>.
+- <strong>Grapheme clustering</strong> for Hangul and kana with diacritics.</p>
+<hr />
+<h3>8. African and Other Scripts</h3>
+<h4>8.1 Ethiopic (Amharic)</h4>
+<ul>
+<li><code>ሰላም ዓለም</code> (selam ālem – “hello, world”)</li>
+</ul>
+<h4>8.2 Tifinagh (Amazigh/Berber)</h4>
+<ul>
+<li><code>ⵣⵉⵙⵉⵏ ⵏ ⵍⵎⵎⵉ</code> (zisin n lmmi – sample text)</li>
+</ul>
+<h4>8.3 Cherokee</h4>
+<ul>
+<li><code>ᎣᏏᏲ ᎢᎬᏱ</code> (osiyo igvyi – “hello there, friend” approximation)</li>
+</ul>
+<h4>8.4 Canadian Aboriginal Syllabics (Cree, Inuktitut, Ojibwe)</h4>
+<p>Unified Canadian Aboriginal Syllabics (UCAS), used for Cree, Inuktitut, Ojibwe, and other Indigenous languages:</p>
+<ul>
+<li>Cree (Plains Cree syllabics): <code>ᐊᐦᐊᐤ ᐊᐧᐊᐧᐱᐩ</code> (sample greeting)</li>
+<li>Inuktitut: <code>ᐃᓄᒃᑎᑐᑦ</code> (Inuktitut – the language name)</li>
+<li>Word with hyphen: <code>ᒥᓂᐦᐅᒋᐊᐧᐤ‑ᐃᐦᐃ</code> (Canadian syllabics hyphen U+1400)</li>
+</ul>
+<p>These test:
+- <strong>Line breaking</strong>: UCAS block (U+1400–U+167F) is AL (alphabetic) in UAX #14; hyphen U+1400 allows break after.
+- <strong>Grapheme clustering</strong>: one cluster per syllabic; no special GCB rules beyond defaults.
+- LTR; no dictionary-based segmentation (word boundaries follow spaces).</p>
+<p>Section 8 (African and Other) tests:
+- Unicode range coverage.
+- Grapheme clustering in less-common scripts.</p>
+<hr />
+<h3>9. Emoji, ZWJ Sequences, and Flags</h3>
+<h4>9.1 Basic Emoji</h4>
+<ul>
+<li>Faces: 🙂 🙃 😄 😢 🤔 😴 😎 😇 🤖 👾</li>
+<li>Animals: 🐶 🐱 🐻 🐼 🐸 🐙 🐧 🐦 🦄</li>
+<li>Food: 🍎 🍕 🍣 🍜 🥐 🍩 ☕</li>
+</ul>
+<p>Each should be a <strong>single grapheme cluster</strong> when treated by UniWorld.</p>
+<h4>9.2 Skin Tone Modifiers</h4>
+<ul>
+<li><code>👍 👍🏻 👍🏼 👍🏽 👍🏾 👍🏿</code></li>
+<li><code>👋 👋🏻 👋🏼 👋🏽 👋🏾 👋🏿</code></li>
+</ul>
+<p>Each base + modifier pair must be a single grapheme cluster (emoji base + Extend).</p>
+<h4>9.3 ZWJ Sequences (Emoji ZWJ)</h4>
+<p>ZWJ (Zero Width Joiner, U+200D) sequences combine multiple emoji into a single rendered glyph.
+UniWorld must treat each full ZWJ sequence as <strong>one grapheme cluster</strong>.</p>
+<p>Examples (codepoint sequences):</p>
+<ul>
+<li>Family: U+1F468 ZWJ U+1F469 ZWJ U+1F467 ZWJ U+1F466 (man + woman + girl + boy)</li>
+<li>Profession: U+1F469 ZWJ U+1F4BB (woman technologist)</li>
+<li>Relationship: U+1F469 ZWJ U+2764 U+FE0F ZWJ U+1F468 (couple with heart)</li>
+</ul>
+<p>These are the most complex grapheme clusters in Unicode: multiple ExtPict code points
+joined by ZWJ into a single user-perceived character. UniWorld handles them correctly;
+the rendered ZWJ emoji are omitted in this PDF only because headless browser print-to-PDF
+has layout issues with such sequences, not because of any Unicode limitation in the library.</p>
+<h4>9.4 Regional Indicator Flags</h4>
+<p>Regional Indicator pairs (U+1F1E6..U+1F1FF) form flag emoji:</p>
+<ul>
+<li>🇺🇳 (UN)</li>
+<li>🇺🇸 (US)</li>
+<li>🇨🇦 (Canada)</li>
+<li>🇧🇷 (Brazil)</li>
+<li>🇯🇵 (Japan)</li>
+</ul>
+<p>Regional indicators must pair: <code>RI + RI = one cluster</code>. UniWorld's grapheme segmentation
+must not split inside a flag pair.</p>
+<hr />
+<h3>10. Combining Marks and Edge Cases</h3>
+<p>Layered combining marks:</p>
+<ul>
+<li><code>à̀</code> (a + grave + grave)  </li>
+<li><code>o͂̂</code> (o + tilde + circumflex)  </li>
+<li><code>ḗ</code> (<code>e</code> with acute and macron when normalized)</li>
+</ul>
+<p>Visually similar but canonically distinct sequences:</p>
+<ul>
+<li><code>Å</code> vs <code>Å</code> (precomposed vs decomposed).</li>
+</ul>
+<p>These cases stress:
+- <strong>Canonical equivalence</strong> under NFC/NFD.
+- <strong>Cluster boundaries</strong> in the presence of multiple combining marks.</p>
+<hr />
+<h3>11. Simple Pictorials and Box Drawing</h3>
+<p>Unicode box-drawing table (small preview):</p>
+<pre><code class="language-text">┌────────────────┐
+│ UniWorld Box   │
+├────────────────┤
+│ [x] Graphemes  │
+│ [x] Width      │
+│ [x] Bidi       │
+│ [x] Breaks     │
+└────────────────┘
+</code></pre>
+<p>Monospace art with mixed characters:</p>
+<pre><code class="language-text">Column ruler:
+12345678901234567890
+ASCII:   Hello, world!
+CJK:     你好世界
+Mixed:   Hi你好
+</code></pre>
+<p>These test:
+- <strong>Display width</strong> alignment in monospace contexts.
+- Handling of box drawing characters.</p>
+<hr />
+<h3>12. Mixed-Script Paragraph (Stress Test)</h3>
+<blockquote>
+<p>Hello, مرحبا, שלום, नमस्ते, สวัสดี, 你好, 한녕하세요 -- this single paragraph mixes Latin, Arabic, Hebrew, Devanagari, Thai, Han, and Hangul. 12345. UniWorld’s job is to ensure that segmentation (grapheme/word/sentence), bidi reordering, and line breaking all behave as the Unicode Standard intends, regardless of which binding (Rust, Python, JS/WASM, C, Go) you use.</p>
+</blockquote>
+<p>You can use this paragraph to:
+- Test cursor movement (logical and visual) across mixed scripts.
+- Check line wrapping with different terminal widths.
+- Verify case folding (<code>HELLO</code> vs <code>hello</code> vs <code>Straße</code> vs <code>STRASSE</code>).</p>
+<hr />
+<h3>13. How to Use This File with UniWorld</h3>
+<p>Some suggested experiments:</p>
+<ul>
+<li><strong>Grapheme boundaries</strong>:</li>
+<li>Run <code>uniworld.segment.grapheme_boundaries()</code> (Python) or <code>grapheme_boundaries()</code> (Rust/JS) on each section.</li>
+<li>
+<p>Verify that:</p>
+<ul>
+<li>Emoji ZWJ sequences and flags are single clusters.</li>
+<li>Indic conjuncts with virama/nukta are not split.</li>
+<li>Combining marks stay attached to their base.</li>
+</ul>
+</li>
+<li>
+<p><strong>Word boundaries</strong>:</p>
+</li>
+<li>Apply <code>word_boundaries()</code> and inspect how mixed scripts and punctuation are grouped.</li>
+<li>
+<p>Confirm that dictionary-based segmentation improves Thai/Lao/Khmer/Myanmar breaks.</p>
+</li>
+<li>
+<p><strong>Normalization</strong>:</p>
+</li>
+<li>Compare NFC vs NFD on accented Latin samples and compatibility forms (ligatures, fractions).</li>
+<li>
+<p>Ensure canonical-equivalent strings compare equal after normalization.</p>
+</li>
+<li>
+<p><strong>Line breaking</strong>:</p>
+</li>
+<li>Use <code>line_break_opportunities_with_dictionary()</code> on the SE Asian sections.</li>
+<li>
+<p>Render with and without dictionary support to see the difference.</p>
+</li>
+<li>
+<p><strong>Display width and truncation</strong>:</p>
+</li>
+<li>Use <code>display_width()</code> and <code>truncate_display_width()</code> on CJK/emoji sections at various widths to confirm visual clamping.</li>
+</ul>
+<hr />
+<h3>14. Invitation</h3>
+<p>UniWorld exists so that <strong>every script</strong> gets <strong>first-class treatment</strong> in modern software:</p>
+<ul>
+<li>Editors and terminals that respect the people using them.</li>
+<li>Backends and services that handle global text correctly, not just ASCII.</li>
+<li>Applications that can be confidently localized into <strong>any writing system</strong> supported by Unicode.</li>
+</ul>
+<p>If this document renders cleanly in your environment – with legible, correctly ordered text across scripts – then UniWorld is doing its job underneath. If you find edge cases, mis-renderings, or missing coverage, they become <strong>actionable test cases</strong> we can add to the suite.</p>
+<p><em>This file is a test output, but it is also an invitation: build a world where every script works correctly by default.</em></p>
+</body>
+</html>

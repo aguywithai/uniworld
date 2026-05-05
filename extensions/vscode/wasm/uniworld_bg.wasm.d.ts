@@ -1,0 +1,32 @@
+/* tslint:disable */
+/* eslint-disable */
+export const memory: WebAssembly.Memory;
+export const bidi_levels: (a: number, b: number) => [number, number];
+export const bidi_paragraph_level: (a: number, b: number) => number;
+export const bidi_reorder: (a: number, b: number) => [number, number];
+export const case_fold: (a: number, b: number) => [number, number];
+export const display_width: (a: number, b: number) => number;
+export const grapheme_boundaries: (a: number, b: number) => [number, number];
+export const line_break_opportunities: (a: number, b: number) => [number, number];
+export const move_left: (a: number, b: number, c: number) => number;
+export const move_left_visual: (a: number, b: number, c: number, d: number) => [number, number];
+export const move_right: (a: number, b: number, c: number) => number;
+export const move_right_visual: (a: number, b: number, c: number, d: number) => [number, number];
+export const normalize_nfc: (a: number, b: number) => [number, number];
+export const normalize_nfd: (a: number, b: number) => [number, number];
+export const normalize_nfkc: (a: number, b: number) => [number, number];
+export const normalize_nfkd: (a: number, b: number) => [number, number];
+export const sentence_boundaries: (a: number, b: number) => [number, number];
+export const to_lowercase: (a: number, b: number) => [number, number];
+export const to_titlecase: (a: number, b: number) => [number, number];
+export const to_uppercase: (a: number, b: number) => [number, number];
+export const truncate_display_width: (a: number, b: number, c: number) => [number, number];
+export const truncate_graphemes: (a: number, b: number, c: number) => [number, number];
+export const visual_cursor_stops: (a: number, b: number) => [number, number];
+export const word_boundaries: (a: number, b: number) => [number, number];
+export const word_boundaries_with_dictionary: (a: number, b: number) => [number, number];
+export const __wbindgen_externrefs: WebAssembly.Table;
+export const __wbindgen_malloc: (a: number, b: number) => number;
+export const __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+export const __wbindgen_free: (a: number, b: number, c: number) => void;
+export const __wbindgen_start: () => void;

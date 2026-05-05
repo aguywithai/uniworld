@@ -1,0 +1,123 @@
+# Build UniWorld native library (cdylib) for PowerShell module on Windows, Linux, macOS.
+# Produces: uniworld.dll (Windows), libuniworld.so (Linux), libuniworld.dylib (macOS).
+# Trigger: push to main/default branch, or tags matching v*
+# Requires: repo on GitHub. Build uses --features cffi so C FFI bindings are included.
+
+name: Build native library
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  release:
+    types: [published]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact_name: uniworld-windows
+            lib_path: target/release/uniworld.dll
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact_name: uniworld-linux
+            lib_path: target/release/libuniworld.so
+          - os: macos-latest
+            rid: osx-arm64
+            artifact_name: uniworld-macos
+            lib_path: target/release/libuniworld.dylib
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Build release with C FFI
+        run: cargo build --release --features cffi
+
+      - name: Upload native binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.lib_path }}
+
+  assemble:
+    name: Assemble native binaries for module
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Windows binary
+        uses: actions/download-artifact@v4
+        with:
+          name: uniworld-windows
+      - name: Download Linux binary
+        uses: actions/download-artifact@v4
+        with:
+          name: uniworld-linux
+      - name: Download macOS binary
+        uses: actions/download-artifact@v4
+        with:
+          name: uniworld-macos
+
+      - name: Create native directory structure
+        run: |
+          mkdir -p extensions/powershell/native/win-x64
+          mkdir -p extensions/powershell/native/linux-x64
+          mkdir -p extensions/powershell/native/osx-arm64
+          mv uniworld-windows/uniworld.dll extensions/powershell/native/win-x64/
+          mv uniworld-linux/libuniworld.so extensions/powershell/native/linux-x64/
+          mv uniworld-macos/libuniworld.dylib extensions/powershell/native/osx-arm64/
+
+      - name: Upload combined native artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: uniworld-native-all
+          path: extensions/powershell/native/
+
+  test-windows:
+    name: Pester tests (Windows)
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust and build DLL
+        run: |
+          rustup default stable
+          cargo build --release --features cffi
+
+      - name: Install Pester
+        run: |
+          Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser
+
+      - name: Run Pester tests
+        run: |
+          $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
+          Import-Module .\extensions\powershell\UniWorld.psd1 -Force
+          Invoke-Pester -Path extensions/powershell/Tests/ -Output Normal
+        shell: pwsh

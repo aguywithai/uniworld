@@ -1,0 +1,83 @@
+---
+description: Roadmap for the UniWorld VS Code Extension
+globs: extensions/vscode/**
+alwaysApply: true
+---
+
+# UniWorld VS Code Extension Roadmap
+
+Extension location: `extensions/vscode/`
+
+## Overview
+
+A VS Code extension that exposes UniWorld functionality to any editor user.
+Uses the **WASM/JS bindings** (wasm-bindgen) from the core library, loaded in
+the extension host. TypeScript extension; published to VS Code Marketplace.
+
+## Phase 1: Foundation and WASM Integration
+
+- [x] **Scaffold**: `package.json`, `tsconfig.json`, entry point (`src/extension.ts`)
+- [x] **Bundle WASM**: Load UniWorld WASM module in the extension host; verify it initializes
+- [x] **Activation**: Extension activates on any text file; WASM loaded lazily on first use
+- [x] **Status bar**: Show "UniWorld" in status bar when active (confirms WASM loaded)
+
+## Phase 2: Core Features
+
+- [x] **Grapheme-aware cursor**: `cursorLeftGrapheme` / `cursorRightGrapheme` commands using WASM `move_left` / `move_right`; cursor never lands inside emoji ZWJ, Indic conjunct, or combining sequence
+- [x] **Grapheme-aware delete**: `deleteLeftGrapheme` / `deleteRightGrapheme` commands; Backspace/Delete removes entire grapheme cluster (emoji, base+combining) in one keypress
+- [x] **Settings-gated keybindings**: `uniworld.enableGraphemeCursor` and `uniworld.enableGraphemeDelete` toggle settings; when enabled, Left/Right/Backspace/Delete automatically use UniWorld; no manual keybinding editing required by end users
+- [x] **Display width in status bar**: On selection or cursor position, show true display width (CJK=2, emoji=2, etc.) and grapheme cluster count in the status bar
+- [x] **Unicode inspector (hover)**: Hover provider showing codepoints, grapheme cluster boundaries, and display width for hovered cluster
+- [x] **Unicode inspector (command palette)**: `UniWorld: Inspect Selection` command showing full breakdown of selected text (codepoints, graphemes, words, sentences)
+- [x] **Safe truncation command**: `UniWorld: Truncate to Display Width` -- prompt for column count, truncate selection without breaking clusters
+- [x] **Normalization commands**: `UniWorld: Normalize NFC/NFD/NFKC/NFKD` -- convert selection using spec-conformant Unicode 17.0 WASM
+
+## Phase 3: Advanced Features
+
+- [x] **Visual bidi cursor**: Left/Right keys follow visual direction in RTL text (Arabic, Hebrew) using `bidi_levels()` from WASM; determines embedding level at cursor, reverses logical direction for odd (RTL) levels; combined with grapheme-aware movement; toggled via `uniworld.enableBidiVisualCursor` setting; overrides grapheme cursor when both are enabled
+- [x] **Line break opportunities**: Show line-break opportunities (including dictionary-based for Thai/Lao/Khmer/Myanmar) as subtle decorations; allowed breaks shown as middle dots, mandatory breaks as red circles; only visible lines processed for performance; toggled via `uniworld.showLineBreakOpportunities` setting and `UniWorld: Toggle Line Break Opportunity Decorations` command
+- [x] **Grapheme-aware word selection**: `UniWorld: Select Word at Cursor` command using `word_boundaries()` from WASM; respects script-specific word boundaries; skips whitespace-only segments; toggled via `uniworld.enableGraphemeWordSelect` setting
+- [x] **Bidi visualization**: Highlight bidi runs in different colors (LTR vs RTL) in the editor. Togglable via `uniworld.showBidiVisualization`; only visible lines processed; uses WASM `bidi_levels()`.
+
+## Phase 4: Polish and Publish
+
+- [ ] **Settings UI**: All toggles documented and grouped under "UniWorld" in VS Code Settings
+- [ ] **Icon and branding**: Extension icon, marketplace description, screenshots
+- [ ] **Package and test**: `vsce package`, test on multiple file types and scripts
+- [ ] **Publish**: Push `.vsix` to VS Code Marketplace
+
+## User-facing settings summary
+
+| Setting | Default | What it does |
+|---------|---------|--------------|
+| `uniworld.enableGraphemeCursor` | `true` | Left/Right arrow keys use UniWorld grapheme movement (default on for common-sense behaviour) |
+| `uniworld.enableGraphemeDelete` | `true` | Backspace/Delete use UniWorld grapheme deletion (default on) |
+| `uniworld.enableBidiVisualCursor` | `false` | (Phase 3) Left/Right follow visual direction in RTL text |
+| `uniworld.enableGraphemeWordSelect` | `false` | (Phase 3) Double-click uses UniWorld word boundaries |
+| `uniworld.showLineBreakOpportunities` | `false` | (Phase 3) Show line-break decorations |
+| `uniworld.showBidiVisualization` | `false` | (Phase 3) Highlight LTR/RTL bidi runs in different colours |
+| `uniworld.enableHoverInspector` | `true` | Show Unicode inspector on hover; set false to disable |
+
+## Common VS Code Unicode problems addressed
+
+1. **Emoji splitting** -- cursor/backspace lands inside ZWJ sequences (fixed: grapheme cursor+delete)
+2. **Indic conjunct splitting** -- cursor breaks ligatures in Devanagari, Bengali, Tamil (fixed: grapheme cursor+delete)
+3. **Combining mark orphaning** -- backspace removes just the accent (fixed: grapheme delete)
+4. **CJK/emoji column miscount** -- wrong column numbers for wide characters (fixed: display width in status bar)
+5. **No normalization** -- pasted text mixes NFC/NFD invisibly (fixed: normalization commands)
+6. **No Unicode inspection** -- no way to see what codepoints are in text (fixed: hover + inspect)
+7. **RTL cursor confusion** -- Left key moves cursor visually right in Arabic/Hebrew (Phase 3: visual bidi cursor)
+8. **Thai/Lao word-break** -- arbitrary line breaks within words (Phase 3: line break decorations)
+9. **Incorrect word selection** -- double-click selects wrong span for complex scripts (Phase 3: word select)
+
+## Technical notes
+
+- WASM bindings are built from `src/wasm_bindings.rs` via `cargo build --target wasm32-unknown-unknown --release --features wasm` + `wasm-bindgen`
+- Extension host supports WASM; bundle the `.wasm` + JS glue in the extension
+- Cursor/delete overrides use `when` clauses gated on user settings; zero impact when disabled
+- Visual bidi cursor uses `bidi_levels()` and `bidi_paragraph_level()` WASM functions to determine embedding level at cursor position; reverses logical direction for RTL (odd-level) characters
+- When `enableBidiVisualCursor` is on, it takes precedence over `enableGraphemeCursor` for Left/Right keys (handled via `when` clause: `!config.uniworld.enableBidiVisualCursor`)
+- Line break decorations only process visible lines for performance; auto-refresh on scroll/edit
+- Bidi visualization uses `bidi_levels()` per visible line; LTR runs (even level) and RTL runs (odd level) get distinct background colours; toggled via `showBidiVisualization`
+- Keybindings are declarative in package.json; no runtime key interception needed
+- No native dependencies; WASM is cross-platform by default

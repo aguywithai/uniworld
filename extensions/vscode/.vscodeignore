@@ -1,0 +1,25 @@
+# Exclude from VSIX package
+.vscode/**
+src/**
+node_modules/**
+tsconfig.json
+*.ts
+!out/**/*.js
+!out/**/*.d.ts
+.gitignore
+**/*.map
+_development/**
+_publishing/**
+.cursor/**
+.env
+.env.example
+# Only icon.png is shipped; exclude other icon candidates and dev docs
+icon1.png
+icon2.png
+icon3.png
+icon4.png
+icon5.png
+icon6.png
+icon7.png
+icon8.png
+UniWorld_Unicode_Showcase_TEST_OUTPUT.md

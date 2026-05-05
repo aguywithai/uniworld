@@ -1,0 +1,13 @@
+# UniWorld - Python tooling and dev scripts
+# Use: pip install -r requirements.txt (from repo root)
+# Covers: _development/scripts, optional Python tests, optional wheel build.
+
+# Testing (for Python-side tests if added; Rust tests use cargo test)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Showcase script: _development/scripts/render_unicode_showcase_to_pdf.py (md -> HTML; PDF via Edge/Chrome headless)
+markdown>=3.5.0
+
+# Build Python wheel from Rust (PyO3): maturin build / maturin develop (also in pyproject.toml [build-system])
+maturin>=1.4,<2.0

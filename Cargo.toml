@@ -1,0 +1,34 @@
+[package]
+name = "uniworld"
+version = "0.2.0"
+edition = "2021"
+description = "Correct Unicode text handling for every script: bidi, line breaking, segmentation, normalization"
+license = "MIT"
+repository = "https://github.com/aguywithai/uniworld"
+readme = "README.md"
+exclude = [
+    "_development/**",
+    ".cursor/**",
+]
+
+[lib]
+name = "uniworld"
+path = "src/lib.rs"
+crate-type = ["lib", "cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["extension-module"], optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
+
+[dev-dependencies]
+
+[features]
+default = []
+# Enable when conformance test data is present
+conformance = []
+# Python bindings via PyO3 (use: maturin build --features python)
+python = ["dep:pyo3"]
+# JavaScript/WASM bindings (use: wasm-pack build --features wasm)
+wasm = ["dep:wasm-bindgen"]
+# C FFI bindings (use: cargo build --features cffi)
+cffi = []

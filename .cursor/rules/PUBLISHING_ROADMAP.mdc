@@ -1,0 +1,241 @@
+---
+description: Publishing roadmap - GitHub, CI, registries, website, launch
+alwaysApply: true
+---
+
+# UniWorld Publishing Roadmap
+
+Covers the full path from development-complete to public release. Structured in two
+phases with a pause point for business development (incorporation, patent filing).
+
+**Key principle**: Publish to GitHub (private) and fully validate before pausing.
+Return after business milestones to go public, publish to registries, build website,
+and promote. This ensures the codebase is release-ready and tested while business
+preparation proceeds independently.
+
+---
+
+## Prerequisites (check before starting)
+
+- [x] Rust core: all conformance tests passing (UAX #9, #14, #15, #29)
+- [x] VS Code extension: 0.1.0 packaged (.vsix), icon, README, CHANGELOG, LICENSE
+- [x] PowerShell module: Phases 1-3 done (all cmdlets working via Rust FFI)
+- [x] PowerShell Phase 4: 68 Pester tests (all 12 cmdlets), comment-based help, README
+- [ ] PowerShell Phase 4: Platform DLLs via CI (needs GitHub push to run)
+- [x] GitHub Actions workflow: `.github/workflows/build-native.yml`
+- [x] Publishing docs: CHECKLIST, MARKETING, OUTREACH_AND_LISTINGS, ACCOUNTS_AND_TOKENS, SITE_CONTENT
+
+---
+
+# PHASE A: Pre-Pause (Complete Before Business Development)
+
+Everything below should be done in the current working session or shortly after.
+Goal: fully tested, release-ready repo on GitHub (private), all accounts and tokens
+acquired, nothing left that requires development work.
+
+---
+
+## Stage 1: Final Local Build and Full Test Suite
+
+Run everything locally one final time to confirm the codebase is clean.
+
+- [ ] **Rust core tests**: `cargo test` (all unit + conformance)
+- [ ] **Rust core build (cffi)**: `cargo build --release --features cffi` (produces DLL)
+- [ ] **VS Code extension compile**: `cd extensions/vscode; npm run compile`
+- [ ] **VS Code extension package**: `cd extensions/vscode; npm run package` (produces .vsix)
+- [ ] **VS Code extension test**: Install .vsix via F5 or `code --install-extension`, run through test guide
+- [ ] **PowerShell Pester tests**: `Import-Module Pester -MinimumVersion 5.0; Invoke-Pester -Path extensions/powershell/Tests/ -Output Detailed` (all 68 pass)
+- [ ] **PowerShell manual smoke test**: Import module, run each cmdlet category once
+- [ ] **Version bumps**: Bump `UniWorld.psd1` to `0.1.0`; confirm `extensions/vscode/package.json` is `0.1.0`; confirm `Cargo.toml` version is aligned
+
+---
+
+## Stage 2: README Alignment and Cross-Linking
+
+Ensure all READMEs are consistent, current, and link to each other before push.
+**Status: Complete.** HAIMU AI development methodology, dev story, and cross-links in place; READMEs declared complete (edits reserved for developments before publishing).
+
+**Scope of work** (estimated ~30 minutes with AI assistance):
+
+- [x] **Root README** (`README.md`):
+  - Verify it reflects the full project: library + VS Code + PowerShell + bindings
+  - Add/verify links to: uniworld.world, GitHub repo, VS Code Marketplace (placeholder URL until published), PowerShell Gallery (placeholder), integration docs, Unicode Showcase
+  - Add link to Grand Beta where appropriate
+  - Add placeholder badge section (badges become live after registry publish)
+- [x] **VS Code README** (`extensions/vscode/README.md`):
+  - Verify links to uniworld.world, root README, PowerShell module
+  - Verify features, settings table, and commands are current
+- [x] **PowerShell README** (`extensions/powershell/README.md`):
+  - Verify links to uniworld.world, root README, VS Code extension
+  - Verify cmdlet table and examples are current
+- [x] **Integration docs** (`docs/integration/`):
+  - Verify each binding doc links to root README and relevant registry
+- [x] **Cross-link audit**: Grep for broken or placeholder links; document any that depend on registry publication (these will be updated in Phase B)
+
+---
+
+## Stage 3: Signups and Procurement
+
+Acquire all accounts, tokens, and the domain before pausing. This way, when you
+return after business development, you can publish immediately without delays.
+
+See `_publishing/ACCOUNTS_AND_TOKENS.md` for detailed steps for each.
+
+- [ ] **GoDaddy: Purchase uniworld.world** (~$20-35 for first year)
+  - Do NOT configure DNS yet (GitHub Pages isn't set up until Phase B)
+  - Just purchase and hold the domain
+- [ ] **Azure DevOps: Create org and PAT** for VS Code Marketplace publishing
+  - Create publisher "aguywithai" via `vsce create-publisher`
+  - Store PAT securely (password manager, not in repo)
+- [ ] **PowerShell Gallery: Create account and API key**
+  - Login at powershellgallery.com with Microsoft account
+  - Generate API key scoped to "UniWorld"
+  - Store key securely
+- [ ] **crates.io: Login with GitHub** (one click, already have GitHub account)
+  - Generate API token for `cargo publish`
+- [ ] **PyPI: Create account** (optional; for when Python binding is published)
+- [ ] **npm: Create account** (optional; for when WASM package is published)
+- [ ] **Store all tokens** in password manager with notes on expiry dates
+
+---
+
+## Stage 4: GitHub Repository (Private)
+
+- [ ] **Create repo**: `gh repo create aguywithai/uniworld --private --source=. --push`
+  (or via github.com: New Repository -> uniworld -> Private)
+- [ ] **Push code**: `git remote add origin https://github.com/aguywithai/uniworld.git; git push -u origin main`
+- [ ] **Verify Actions**: Check Actions tab; `build-native.yml` triggers on push to main:
+  - [ ] Windows build succeeds, uploads `uniworld.dll`
+  - [ ] Linux build succeeds, uploads `libuniworld.so`
+  - [ ] macOS build succeeds, uploads `libuniworld.dylib`
+  - [ ] Pester (test-windows) job passes
+  - [ ] Assemble job produces `uniworld-native-all` artifact
+- [ ] **Fix any CI issues** and push fixes until all green
+
+---
+
+## Stage 5: Cross-Platform Testing with CI Artifacts
+
+- [ ] **Download artifacts**: From Actions run, download `uniworld-native-all`
+- [ ] **Place in module**: Copy to `extensions/powershell/native/win-x64/`, `linux-x64/`, `osx-arm64/`
+- [ ] **WSL test**: Enter WSL, copy `libuniworld.so` to `native/linux-x64/`, run:
+  ```bash
+  pwsh -c "Import-Module ./extensions/powershell/UniWorld.psd1 -Force; Invoke-Pester -Path ./extensions/powershell/Tests/ -Output Detailed"
+  ```
+- [ ] **macOS test** (if collaborator available): Same Pester tests with `.dylib`
+- [ ] **VS Code extension**: Final install of .vsix, full manual test pass
+- [ ] **All tests green**: Confirm no regressions across platforms
+
+---
+
+## === PAUSE POINT: Business Development ===
+
+At this point, the UniWorld codebase is:
+- Fully tested locally (Rust, VS Code, PowerShell)
+- On GitHub (private), CI passing on all 3 platforms
+- Cross-platform artifacts built and verified
+- All accounts created and tokens secured
+- Domain purchased (DNS not yet configured)
+- READMEs aligned and cross-linked
+
+**Leave the repo here.** Proceed with:
+- Business incorporation
+- Provisional patent preparation and filing
+- Other portfolio preparation
+
+The repo will be ready to go public the moment you return. Nothing in the codebase
+will change while you're away (unless you choose to make improvements).
+
+**Recommended: live-publish testing before going fully public** (see Stage 6 notes).
+
+---
+
+# PHASE B: Post-Business Development (Return to Publish)
+
+Resume here after incorporation and patent filing are secured.
+
+---
+
+## Stage 6: Go Public and Publish to Registries
+
+**Pre-flight check**: Pull repo, run `cargo test`, run Pester tests, compile VS Code
+extension -- confirm nothing has broken (Rust toolchain or dependency updates may
+have occurred while away).
+
+- [ ] **Pre-flight: local full test suite** (repeat Stage 1 tests)
+- [ ] **Optional: live-publish testing**
+  - VS Code: `vsce publish` then immediately set to **unlisted** in Marketplace dashboard
+    (visible only via direct link for testing the install flow)
+  - PowerShell: Publish pre-release version (`0.1.0-beta1`) to Gallery
+  - Test: Install from Marketplace/Gallery on a clean machine or VM to verify
+    the full install-and-use flow works outside your dev environment
+  - Fix any issues found
+- [ ] **Make repo public**: GitHub -> Settings -> Danger Zone -> Change visibility -> Public
+- [ ] **Publish VS Code extension**: `cd extensions/vscode; vsce publish`
+  - If previously published unlisted, update to listed
+- [ ] **Publish PowerShell module**: `Publish-Module -Path . -NuGetApiKey $key`
+  - If previously pre-release, publish stable `0.1.0`
+- [ ] **Publish Rust crate**: `cargo publish` (from repo root)
+- [ ] **Publish Python** (if ready): `maturin publish`
+- [ ] **Publish npm** (if ready): `npm publish`
+- [ ] **Tag release**: `git tag v0.1.0; git push origin v0.1.0`
+- [ ] **Create GitHub Release**: Attach .vsix, native binaries, release notes
+- [ ] **Badges**: Update root README with live badges (crates.io version, VS Code installs, license, etc.)
+
+---
+
+## Stage 7: Website Creation (GitHub Pages at uniworld.world)
+
+- [ ] **Build site**: Follow `_publishing/MARKETING_AND_WEBSITE_DESIGN.md`
+- [ ] **Content**: Hero, problem statement, feature grid, scripts covered, quick-start code, install cards, ecosystem links, Grand Beta footer
+- [ ] **Deploy**: Enable GitHub Pages (Settings -> Pages -> main branch)
+- [ ] **Configure DNS**: In GoDaddy, add A records and CNAME per `ACCOUNTS_AND_TOKENS.md`
+- [ ] **Custom domain**: In GitHub repo Settings -> Pages -> Custom domain -> `uniworld.world`
+- [ ] **Verify HTTPS**: Check "Enforce HTTPS" in Pages settings
+- [ ] **Test**: Site loads at `https://uniworld.world` with all links working
+
+---
+
+## Stage 8: Screenshots and Final Polish
+
+- [ ] **VS Code Marketplace screenshots**: Take screenshots of extension features in action (hover inspector, bidi visualization, grapheme cursor, status bar). Upload to Marketplace.
+- [ ] **Update any placeholder links**: Now that all registries are live, replace any placeholder URLs in READMEs, integration docs, or website
+- [ ] **Verify all cross-links**: Every README, doc page, and website link resolves correctly
+
+---
+
+## Stage 9: Outreach and Promotion
+
+See `_publishing/OUTREACH_AND_LISTINGS.md` for full details on each channel.
+
+- [ ] **Unicode Consortium**: Email requesting library listing; post to unicode@ mailing list
+- [ ] **Developer communities**: r/rust, r/programming, r/PowerShell, r/vscode, Hacker News (Show HN)
+- [ ] **Awesome lists**: PR to awesome-rust, awesome-vscode
+- [ ] **Blog post**: Dev.to or preferred platform (technical angle: conformance, algorithms)
+- [ ] **Social media**: Twitter/X thread, Mastodon (fosstodon.org)
+- [ ] **A Guy With AI integration**: Feature on aguywithai.world; mention on podcast
+- [ ] **HAIMU case study**: Reference on haimu.world as methodology demonstration
+- [ ] **worldof.world**: Add to project listing
+- [ ] **Grand Beta portfolio**: Link from grandbeta.world
+- [ ] **Press release** (broader narrative): Draft after patents are secured; ties UniWorld to AI methodology and broader portfolio. Specific messaging to be planned.
+
+---
+
+## Open Items from Other Roadmaps
+
+### VS Code Extension Roadmap (remaining)
+- [ ] Screenshots for Marketplace (Stage 8 above)
+- [ ] RTL mouse click correction (deferred; known VS Code limitation; post-launch)
+
+### Project Roadmap (remaining)
+- [ ] Package publication: crates.io, PyPI, npm (Stage 6 above)
+- [ ] Static site for GitHub Pages (Stage 7 above)
+- [ ] Community test-case and dictionary contribution process (post-launch)
+- [ ] Outreach and visibility (Stage 9 above)
+- [ ] API reference: auto-generated from Rust doc comments (post-launch)
+
+### PowerShell Roadmap (remaining)
+- [x] Pester tests (done: 68 tests, all passing)
+- [x] Help (done: all 12 cmdlets)
+- [ ] Platform DLLs (Stage 4-5 CI above)
+- [ ] Publish to Gallery (Stage 6 above)

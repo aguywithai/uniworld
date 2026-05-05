@@ -1,0 +1,73 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+*.egg-info/
+*.egg
+
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local dev and generated artifacts (keep _development/dev_notes, docs, scripts versioned)
+# Ignore local override or secret config if added later
+*.local
+.env
+.env.*
+!.env.example
+
+# Conformance test data downloads (large; re-download with _development/scripts/download_ucd_tests.ps1)
+_development/data/
+
+# Generated artifacts under _development/ (e.g. PDF renderings); keep markdown and project docs versioned
+_development/**/*.pdf
+
+# Build and package outputs (do not commit)
+*.dll
+*.dylib
+*.node
+
+# WASM build output (re-build with wasm-pack)
+pkg/
+# But DO track the WASM artifacts bundled with the VS Code extension
+# (they are committed so the extension works without a Rust build)
+!extensions/vscode/wasm/
+
+# Coverage and profiling
+coverage/
+*.profraw
+*.profdata
+
+# Extensions build artifacts
+extensions/vscode/out/
+extensions/vscode/node_modules/
+extensions/vscode/*.vsix
+extensions/powershell/bin/
+extensions/powershell/obj/
+
+# Local-only checklists (not committed; kept adjacent to CHANGELOG)
+VERSION_UPDATE_CHECKLIST.md
