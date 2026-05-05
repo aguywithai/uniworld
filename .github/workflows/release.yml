@@ -125,18 +125,49 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      # Explicit target avoids wasm-pack calling rustup with an invalid "web" triple on some versions.
       - name: Ensure wasm32-unknown-unknown
         run: rustup target add wasm32-unknown-unknown
 
-      # wasm-pack 0.12.x passes flags incompatible with current Cargo (e.g. --out-dir on cargo build).
-      # Install current wasm-pack; keep wasm32-unknown-unknown installed above. Omit wasm-pack
-      # --target (web/bundler) so it is not mistaken for a rustc triple.
-      - name: Install wasm-pack
-        run: cargo install wasm-pack --locked
+      # wasm-pack forwards --out-dir into cargo build; current Cargo rejects it (use wasm-bindgen-cli).
+      - name: Build wasm (cargo)
+        run: cargo build --release --target wasm32-unknown-unknown --features wasm
 
-      - name: wasm-pack build
-        run: wasm-pack build --release --features wasm --out-dir pkg
+      - name: Install wasm-bindgen-cli (version matches wasm-bindgen crate)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y jq
+          VER=$(cargo metadata --format-version 1 | jq -r '[.packages[] | select(.name == "wasm-bindgen") | .version] | unique | .[0]')
+          test -n "$VER"
+          echo "wasm-bindgen crate version: ${VER}"
+          cargo install wasm-bindgen-cli --version "${VER}" --locked
+
+      - name: wasm-bindgen emit and npm package.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf pkg
+          mkdir -p pkg
+          wasm-bindgen target/wasm32-unknown-unknown/release/uniworld.wasm \
+            --out-dir pkg \
+            --target web \
+            --typescript
+          export VERSION=$(grep '^version = ' Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          node <<'NODE'
+          const fs = require("fs");
+          const version = process.env.VERSION;
+          const pkg = {
+            name: "uniworld",
+            version,
+            description: "Correct Unicode text handling for every script: bidi, line breaking, segmentation, normalization",
+            license: "MIT",
+            repository: { type: "git", url: "https://github.com/aguywithai/uniworld" },
+            main: "uniworld.js",
+            types: "uniworld.d.ts",
+          };
+          fs.writeFileSync("pkg/package.json", JSON.stringify(pkg, null, 2) + "\n");
+          NODE
 
       - name: npm publish
         working-directory: pkg
