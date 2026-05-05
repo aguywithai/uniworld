@@ -3,7 +3,7 @@
 #
 # GitHub Actions repository secrets (Settings -> Secrets and variables -> Actions):
 #   PYPI_API_TOKEN       - PyPI API token (project-scoped recommended)
-#   CARGO_REGISTRY_TOKEN - crates.io API token
+#   CARGO_REGISTRY_TOKEN - crates.io API token (crates.io profile email must be verified)
 #   NPM_TOKEN            - npm automation/publish token
 # Optional (future jobs): VSCE_PAT, PSGALLERY_API_KEY
 #
@@ -71,6 +71,8 @@ jobs:
         with:
           command: publish
           args: --non-interactive --skip-existing
+          # PyO3 0.23 supports CPython through 3.13; macOS runners may default to 3.14.
+          python-version: "3.12"
         env:
           MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
 
@@ -85,8 +87,9 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      # Cargo reads CARGO_REGISTRY_TOKEN for crates.io (avoid deprecated --token flag).
       - name: cargo publish
-        run: cargo publish --token "${CARGO_REGISTRY_TOKEN}"
+        run: cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
@@ -103,15 +106,21 @@ jobs:
           registry-url: https://registry.npmjs.org
           always-auth: true
 
-      - name: Install Rust targets and wasm-pack
+      - name: Install Rust wasm target
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
 
-      - run: cargo install wasm-pack --locked
+      # Explicit target avoids wasm-pack calling rustup with an invalid "web" triple on some versions.
+      - name: Ensure wasm32-unknown-unknown
+        run: rustup target add wasm32-unknown-unknown
 
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      # Use bundler output mode (wasm-pack --target), not rustc triple "web" (see wasm-pack book).
       - name: wasm-pack build
-        run: wasm-pack build --release --features wasm --target web --out-dir pkg
+        run: wasm-pack build --release --features wasm --target bundler --out-dir pkg
 
       - name: npm publish
         working-directory: pkg
