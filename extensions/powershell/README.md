@@ -35,6 +35,19 @@ Import-Module ./extensions/powershell/UniWorld.psd1
 
 The module looks for the native library in `native/<rid>/` (CI artifacts), then `native/`, then `../../target/release/`.
 
+## Publishing to PowerShell Gallery (maintainers)
+
+`Publish-Module -Path .` from this folder fails because the directory name must match the module (`UniWorld.psd1` expects a parent folder named `UniWorld`). Use:
+
+```powershell
+# One-time if Publish-Module asks for NuGet:
+# Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
+cd extensions/powershell
+$env:PSGALLERY_API_KEY = '<your API key>'
+.\Publish-ToGallery.ps1
+```
+
 ## Cmdlets
 
 ### Text Segmentation ([UAX #29](https://unicode.org/reports/tr29/))

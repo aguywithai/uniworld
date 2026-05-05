@@ -149,7 +149,7 @@ Human checkpoint: **you** decide when to publish. The bot (or you) can do the re
   2. In `extensions/vscode/package.json` add `"icon": "icon.png"` at the top level (next to `"main"`). Include `icon.png` in the `"files"` array if not already covered.
   3. The same image can be used on the website (e.g. in `_publishing/site/` or GitHub Pages) as the project thumbnail or hero image.
 - [ ] **VS Code extension**: From `extensions/vscode/`, run `vsce publish` (requires `VSCE_PAT` in `.env` or logged in via `vsce login`). Or publish via CI.
-- [ ] **PowerShell module**: From `extensions/powershell/`, run `Publish-Module -Path . -NuGetApiKey $env:PSGALLERY_API_KEY`. Or publish via CI.
+- [ ] **PowerShell module**: From `extensions/powershell/`, run `.\Publish-ToGallery.ps1` after setting `PSGALLERY_API_KEY` (do not use `Publish-Module -Path .` from `powershell` folder; the folder must be named `UniWorld`). Or publish via CI.
 
 ---
 
