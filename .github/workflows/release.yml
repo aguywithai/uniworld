@@ -129,10 +129,11 @@ jobs:
       - name: Ensure wasm32-unknown-unknown
         run: rustup target add wasm32-unknown-unknown
 
-      # Pin wasm-pack: some releases mistakenly pass wasm-pack's --target (web/bundler) to
-      # rustup as a Rust triple. Omit --target here (default bundler-style output).
+      # wasm-pack 0.12.x passes flags incompatible with current Cargo (e.g. --out-dir on cargo build).
+      # Install current wasm-pack; keep wasm32-unknown-unknown installed above. Omit wasm-pack
+      # --target (web/bundler) so it is not mistaken for a rustc triple.
       - name: Install wasm-pack
-        run: cargo install wasm-pack --locked --version 0.12.1
+        run: cargo install wasm-pack --locked
 
       - name: wasm-pack build
         run: wasm-pack build --release --features wasm --out-dir pkg

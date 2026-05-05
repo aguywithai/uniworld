@@ -6,9 +6,17 @@ description = "Correct Unicode text handling for every script: bidi, line breaki
 license = "MIT"
 repository = "https://github.com/aguywithai/uniworld"
 readme = "README.md"
-exclude = [
-    "_development/**",
-    ".cursor/**",
+# crates.io rejects uploads larger than 10 MiB (compressed). When `include` is set, only these
+# paths are packaged; everything else (extensions/, docs PDFs, _publishing/, bindings/, etc.)
+# stays in the git repo but is not shipped on crates.io. Full tree remains on GitHub for
+# Python/maturin sdists, WASM npm builds, and VS Code/PowerShell packaging via CI.
+include = [
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "CONTRIBUTING.md",
+    "src/**",
+    "tests/**",
 ]
 
 [lib]
