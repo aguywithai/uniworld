@@ -18,6 +18,12 @@ $here = $PSScriptRoot
 $stageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "UniWorldGalleryPublish"
 $stageModule = Join-Path $stageRoot "UniWorld"
 
+# Windows PowerShell 5.1 often negotiates TLS 1.0; www.powershellgallery.org requires TLS 1.2+.
+if ($PSVersionTable.PSVersion.Major -lt 6) {
+    $tls12 = [Net.SecurityProtocolType]::Tls12
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor $tls12
+}
+
 Write-Host "Staging module from: $here"
 Write-Host "Staging folder:      $stageModule"
 
@@ -42,7 +48,7 @@ if (-not $SkipPublish) {
     if (-not $env:PSGALLERY_API_KEY) {
         Write-Error "Set PSGALLERY_API_KEY before publishing."
     }
-    Publish-Module -Path $stageModule -NuGetApiKey $env:PSGALLERY_API_KEY
+    Publish-Module -Path $stageModule -NuGetApiKey $env:PSGALLERY_API_KEY -ErrorAction Stop
     Write-Host "Done. Check https://www.powershellgallery.com/packages/UniWorld"
 } else {
     Write-Host "SkipPublish set; staged at: $stageModule"

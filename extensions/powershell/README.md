@@ -40,6 +40,10 @@ The module looks for the native library in `native/<rid>/` (CI artifacts), then 
 `Publish-Module -Path .` from this folder fails because the directory name must match the module (`UniWorld.psd1` expects a parent folder named `UniWorld`). Use:
 
 ```powershell
+# Windows PowerShell 5.1: if you see "Could not create SSL/TLS secure channel", the script
+# sets TLS 1.2 before upload. You can also run once per session:
+# [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 # One-time if Publish-Module asks for NuGet:
 # Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 
