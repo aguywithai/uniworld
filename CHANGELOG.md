@@ -2,6 +2,14 @@
 
 All notable changes to UniWorld are documented in this file.
 
+## [0.2.1] - 2026-07-13
+
+### Fixed
+
+- README Python quick-start: `display_width("Hello")` is 5, not 10; added CJK width example.
+
+[0.2.1]: https://github.com/aguywithai/uniworld/compare/v0.2.0...v0.2.1
+
 ## [0.2.0] - 2026-05-04
 
 ### Summary

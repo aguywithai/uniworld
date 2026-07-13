@@ -73,3 +73,6 @@ extensions/powershell/obj/
 
 # Local-only checklists (not committed; kept adjacent to CHANGELOG)
 VERSION_UPDATE_CHECKLIST.md
+
+# Publishing ops, marketing drafts, and local site source (canonical site lives in C:\main\sites)
+_publishing/

@@ -133,7 +133,8 @@ let width = display_width("Hello");                    // 5
 import uniworld
 
 uniworld.grapheme_boundaries("cafe\u0301")   # ["c", "a", "f", "e\u0301"]
-uniworld.display_width("Hello")              # 10 (CJK)
+uniworld.display_width("Hello")              # 5
+uniworld.display_width("\u4f60\u597d")       # 4 (CJK, width 2 each)
 uniworld.normalize_nfc("cafe\u0301")         # "cafe" (composed)
 ```
 

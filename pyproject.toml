@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "uniworld"
-version = "0.2.0"
+version = "0.2.1"
 description = "Correct Unicode text handling for every script"
 readme = "README.md"
 license = { text = "MIT" }
